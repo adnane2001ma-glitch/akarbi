@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AKARBI — Chapter 01</title>
+<meta name="description" content="La veste Signature. Le cercle s’ouvre le mardi 1er décembre à 20 h (Casablanca et Paris). Les inscrits entrent la veille.">
+<meta name="theme-color" content="#050f0c">
+<meta property="og:title" content="AKARBI — Chapter 01">
+<meta property="og:description" content="Le cercle s’ouvre le mardi 1er décembre à 20 h.">
+<meta property="og:image" content="assets/fond-ordinateur.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400;1,500&family=Hanken+Grotesk:wght@400;500;600&display=swap">
+<link rel="preload" href="assets/akarbi-typeface.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:'AKARBI';src:url('assets/akarbi-typeface.woff2') format('woff2');font-display:swap}
+html,body{margin:0;background:#050f0c}
+/* ================= Porte d'entrée : compte à rebours + code ================= */
+html.gate-on, html.gate-on body { overflow: hidden !important; }
+#gate {
+  --g-nuit: #050f0c; --g-bord: #561020; --g-bord-vif: #7f0b1f;
+  --g-iv: #eee5d3; --g-iv2: rgba(238,229,211,.72); --g-iv3: rgba(238,229,211,.5); --g-ligne: rgba(238,229,211,.18);
+  --g-display: 'AKARBI','Cormorant Garamond',Georgia,serif;
+  --g-serif: 'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --g-sans: 'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  position: fixed; inset: 0; z-index: 2000; overflow-y: auto; overscroll-behavior: contain;
+  background: var(--g-nuit); color: var(--g-iv); font: 400 15px/1.6 var(--g-sans); text-align: center;
+  -webkit-font-smoothing: antialiased; transition: opacity .9s cubic-bezier(.22,1,.36,1), visibility .9s;
+}
+#gate *, #gate *::before, #gate *::after { box-sizing: border-box; }
+#gate.is-leaving { opacity: 0; visibility: hidden; }
+#gate[hidden] { display: none !important; }
+#gate a { color: inherit; }
+#gate svg { display: block; }
+#gate :focus-visible { outline: 2px solid var(--g-iv); outline-offset: 3px; }
+#gate .g-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+#gate .g-scene { position: fixed; inset: 0; z-index: 0; overflow: hidden; background: var(--g-nuit); }
+#gate .g-scene img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 55%; transform-origin: 50% 60%; animation: g-souffle 40s ease-in-out infinite alternate; }
+#gate .g-scrim { position: fixed; inset: 0; z-index: 1; pointer-events: none; background:
+  radial-gradient(ellipse 36% 46% at 50% 52%, rgba(5,15,12,.78) 0%, rgba(5,15,12,.5) 55%, rgba(5,15,12,0) 100%),
+  linear-gradient(180deg, rgba(5,15,12,.7) 0%, rgba(5,15,12,0) 18%, rgba(5,15,12,0) 80%, rgba(5,15,12,.75) 100%); }
+#gate .g-grain { position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: .1; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .93 0 0 0 0 .9 0 0 0 0 .83 1.6 0 0 0 -.62'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+@keyframes g-souffle { from { transform: scale(1); } to { transform: scale(1.05); } }
+
+#gate .g-wrap { position: relative; z-index: 3; min-height: 100svh; display: flex; flex-direction: column; align-items: center; padding-inline: clamp(16px,5vw,72px); padding-block: calc(26px + env(safe-area-inset-top,0px)) calc(22px + env(safe-area-inset-bottom,0px)); }
+#gate .g-lock { margin: 0; display: flex; align-items: center; gap: 12px; color: var(--g-iv); }
+#gate .g-lock svg { height: 18px; width: auto; }
+#gate .g-stage { flex: 1; width: 100%; max-width: 760px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; padding-block: clamp(28px,5vh,56px); }
+#gate .g-eyebrow { margin: 0; font: 600 11px/1.4 var(--g-sans); letter-spacing: .28em; text-transform: uppercase; color: var(--g-iv2); }
+#gate .g-h1 { margin: 0; font: 400 clamp(22px,2.5vw,34px)/1.1 var(--g-display); letter-spacing: .08em; text-transform: uppercase; text-wrap: balance; }
+
+#gate .g-cd { display: flex; justify-content: center; align-items: flex-start; margin: 6px 0 2px; }
+#gate .g-u { display: grid; justify-items: center; gap: 14px; padding-inline: clamp(12px,2.2vw,34px); }
+#gate .g-u + .g-u { border-left: 1px solid var(--g-ligne); }
+#gate .g-n { display: flex; font: 400 clamp(56px,9vw,144px)/.84 var(--g-display); color: var(--g-iv); text-shadow: 0 2px 30px rgba(5,15,12,.6); }
+#gate .g-n i { font-style: normal; display: inline-block; width: .47em; text-align: center; }
+#gate .g-l { font: 600 10.5px/1 var(--g-sans); letter-spacing: .26em; text-transform: uppercase; color: var(--g-iv2); }
+#gate .g-date { margin: 0; font: 500 14px/1.5 var(--g-sans); letter-spacing: .02em; color: var(--g-iv2); text-wrap: balance; }
+#gate .g-date b { font-weight: 600; color: var(--g-iv); }
+#gate .g-date sup { font-size: .62em; line-height: 0; vertical-align: .55em; }
+#gate .g-date .g-tz { display: block; margin-top: 3px; font-size: 12px; letter-spacing: .04em; color: var(--g-iv3); }
+
+#gate .g-join { width: 100%; max-width: 540px; display: grid; justify-items: center; gap: 14px; margin-top: 14px; }
+#gate .g-join-t { margin: 0; font: 600 12px/1 var(--g-sans); letter-spacing: .26em; text-transform: uppercase; }
+#gate .g-join-d { margin: 0; font-size: 14.5px; color: var(--g-iv2); max-width: 52ch; text-wrap: balance; }
+#gate .g-row { width: 100%; display: flex; margin-top: 4px; }
+#gate .g-row input { flex: 1; min-width: 0; height: 54px; padding: 0 18px; border: 1px solid rgba(238,229,211,.45); border-right: 0; background: rgba(5,15,12,.62); color: var(--g-iv); font: 400 16px/1 var(--g-sans); border-radius: 0; -webkit-appearance: none; appearance: none; text-align: left; }
+#gate .g-row input::placeholder { color: rgba(238,229,211,.45); }
+#gate .g-row input:focus-visible, #gate .g-code-row input:focus-visible { outline: 2px solid var(--g-iv); outline-offset: -2px; }
+#gate .g-btn { height: 54px; padding: 0 24px; border: 0; background: var(--g-bord); color: var(--g-iv); font: 600 12px/1 var(--g-sans); letter-spacing: .18em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: background-color .18s; }
+#gate .g-btn:hover { background: var(--g-bord-vif); }
+#gate .g-btn[disabled] { opacity: .6; cursor: progress; }
+#gate .g-consent { display: grid; grid-template-columns: 20px 1fr; gap: 12px; align-items: start; text-align: left; font-size: 12.5px; line-height: 1.55; color: var(--g-iv2); cursor: pointer; max-width: 540px; }
+#gate .g-consent input { width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--g-bord-vif); cursor: pointer; }
+#gate .g-consent a { color: var(--g-iv); text-underline-offset: 3px; }
+#gate .g-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+#gate .g-msg { margin: 0; min-height: 1.5em; font-size: 13.5px; color: var(--g-iv); }
+#gate .g-done { width: 100%; max-width: 540px; display: grid; justify-items: center; gap: 14px; margin-top: 14px; padding: 26px 28px; border: 1px solid var(--g-ligne); background: rgba(5,15,12,.72); }
+#gate .g-done[hidden], #gate .g-join[hidden] { display: none; }
+#gate .g-done-t { margin: 0; font: italic 500 clamp(28px,2.6vw,36px)/1.15 var(--g-serif); }
+#gate .g-done-d { margin: 0; font-size: 14.5px; color: var(--g-iv2); }
+
+#gate .g-foot { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 8px 26px; font-size: 12px; color: var(--g-iv3); }
+#gate .g-motto { font: 400 14px/1 var(--g-display); letter-spacing: .22em; color: var(--g-iv2); }
+
+#gate .g-code { display: grid; justify-items: center; gap: 8px; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--g-ligne); width: 100%; }
+#gate .g-code-l { font: 600 10.5px/1 var(--g-sans); letter-spacing: .26em; text-transform: uppercase; color: var(--g-iv3); }
+#gate .g-code-row { display: flex; }
+#gate .g-code-row input { width: 150px; height: 44px; padding: 0 12px; border: 1px solid rgba(238,229,211,.32); border-right: 0; background: rgba(5,15,12,.6); color: var(--g-iv); font: 600 14px/1 var(--g-sans); letter-spacing: .3em; text-transform: uppercase; text-align: center; border-radius: 0; -webkit-appearance: none; appearance: none; }
+#gate .g-code-row input::placeholder { letter-spacing: .2em; color: rgba(238,229,211,.36); }
+#gate .g-code-b { height: 44px; padding: 0 16px; border: 1px solid rgba(238,229,211,.32); background: transparent; color: var(--g-iv2); font: 600 11px/1 var(--g-sans); letter-spacing: .2em; text-transform: uppercase; cursor: pointer; }
+#gate .g-code-b:hover { color: var(--g-iv); border-color: var(--g-iv); }
+#gate .g-code-msg { font-size: 12.5px; min-height: 1.4em; }
+
+@media (max-width: 520px) {
+  #gate .g-scrim { background:
+    radial-gradient(ellipse 80% 44% at 50% 50%, rgba(5,15,12,.8) 0%, rgba(5,15,12,.55) 60%, rgba(5,15,12,.3) 100%),
+    linear-gradient(180deg, rgba(5,15,12,.55) 0%, rgba(5,15,12,.2) 25%, rgba(5,15,12,.2) 75%, rgba(5,15,12,.7) 100%); }
+  #gate .g-stage { gap: 18px; }
+  #gate .g-row { flex-direction: column; gap: 10px; }
+  #gate .g-row input { flex: none; height: 54px; border-right: 1px solid rgba(238,229,211,.45); }
+  #gate .g-btn { width: 100%; }
+  #gate .g-n { font-size: clamp(46px,15vw,64px); }
+  #gate .g-u { padding-inline: clamp(9px,3vw,14px); }
+  #gate .g-foot { flex-direction: column; gap: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #gate { transition: none; }
+  #gate .g-scene img { animation: none; }
+}
+
+</style>
+</head>
+<body>
+<div id="gate" role="dialog" aria-modal="true" aria-labelledby="g-titre">
+  <div class="g-scene" aria-hidden="true"><picture><source media="(max-aspect-ratio: 4/5)" srcset="assets/fond-mobile.webp"><img src="assets/fond-ordinateur.webp" alt="" fetchpriority="high"></picture></div>
+  <div class="g-scrim" aria-hidden="true"></div>
+  <div class="g-grain" aria-hidden="true"></div>
+
+  <div class="g-wrap">
+    <p class="g-lock" aria-label="AKARBI"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1140 716" fill="currentColor" fill-rule="evenodd"><path d="M1090,36 L783,36 L845,126 L620,394 L617,393 L618,0 L604,10 L372,237 L367,235 L276,127 L334,36 L39,36 L57,62 L265,320 L0,620 L313,620 L256,539 L352,431 L501,612 L530,652 L566,715 L583,675 L620,615 L667,553 L785,409 L901,540 L843,620 L1139,620 L1014,467 L873,302Z M111,71 L266,70 L268,74 L230,128 L368,290 L581,82 L584,491 L890,129 L852,75 L852,70 L1014,70 L1015,74 L903,208 L829,303 L1066,585 L914,585 L945,538 L789,355 L786,355 L638,534 L598,586 L564,641 L531,593 L354,378 L212,537 L212,541 L244,581 L245,586 L80,586 L79,582 L311,322Z M525,222 L405,339 L409,348 L522,481 L525,450Z M488,304 L490,389 L451,345 L451,341Z"/></svg><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 717 296" fill="currentColor" fill-rule="evenodd"><path d="M676,1 L676,274 L673,277 L657,276 L657,295 L699,295 L703,292 L700,265 L699,210 L700,20 L716,16 L716,2Z M554,1 L553,293 L575,293 L653,214 L644,198 L601,145 L642,96 L649,83 L577,2Z M583,158 L632,215 L579,268 L577,168Z M581,31 L622,80 L625,89 L583,139 L578,142 L576,96 L579,32Z M149,1 L147,292 L173,293 L175,291 L172,179 L178,152 L181,150 L227,293 L254,293 L255,288 L230,222 L202,137 L193,117 L207,78 L241,2 L228,1 L180,114 L177,126 L173,130 L171,121 L176,1Z M433,1 L430,292 L456,292 L456,178 L464,166 L469,163 L482,209 L484,226 L500,292 L502,294 L529,293 L489,140 L489,133 L523,92 L523,87 L454,0Z M459,29 L493,71 L506,91 L457,155 L456,72 L457,30Z M335,0 L328,27 L309,148 L282,292 L315,293 L317,291 L317,278 L298,276 L297,270 L328,100 L334,83 L364,225 L375,292 L401,293 L403,292 L403,286 L364,104 L348,17 L343,1Z M53,0 L48,11 L12,232 L0,291 L1,293 L34,292 L34,278 L17,276 L15,271 L48,86 L51,83 L83,232 L93,292 L121,293 L68,31 L61,3 L58,0Z"/></svg></p>
+
+    <main class="g-stage">
+      <p class="g-eyebrow">Chapter 01 — Première trace</p>
+      <h1 class="g-h1" id="g-titre" data-g-titre>Le cercle s’ouvre dans</h1>
+      <div class="g-cd" role="timer" aria-describedby="g-date">
+        <div class="g-u"><span class="g-n" data-g-u="j"><i>0</i><i>0</i></span><span class="g-l">Jours</span></div>
+        <div class="g-u"><span class="g-n" data-g-u="h"><i>0</i><i>0</i></span><span class="g-l">Heures</span></div>
+        <div class="g-u"><span class="g-n" data-g-u="m"><i>0</i><i>0</i></span><span class="g-l">Minutes</span></div>
+        <div class="g-u"><span class="g-n" data-g-u="s"><i>0</i><i>0</i></span><span class="g-l">Secondes</span></div>
+      </div>
+      <p class="g-date" id="g-date" data-g-date></p>
+
+      <form class="g-join" novalidate data-g-form>
+        <p class="g-join-t">Rejoins le cercle</p>
+        <p class="g-join-d" data-g-join-d></p>
+        <div class="g-row">
+          <label class="g-sr" for="g-email">Ton adresse email</label>
+          <input id="g-email" name="email" type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" placeholder="ton@email.com" required>
+          <button class="g-btn" id="g-go" type="submit">Rejoindre le cercle</button>
+        </div>
+        <input class="g-hp" id="g-site" name="site" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <label class="g-consent" for="g-ok"><input id="g-ok" name="ok" type="checkbox"><span>J’accepte de recevoir les emails d’AKARBI : l’accès anticipé et les nouvelles de la maison. Désinscription en un clic. <a href="confidentialite.html" target="_blank" rel="noopener">Confidentialité</a></span></label>
+        <p class="g-msg" id="g-msg" role="status" aria-live="polite"></p>
+      </form>
+
+      <div class="g-done" hidden data-g-done>
+        <p class="g-done-t" tabindex="-1" id="g-done-t">Tu es dans le cercle.</p>
+        <p class="g-done-d" data-g-done-d></p>
+      </div>
+    </main>
+
+    <footer class="g-foot">
+      <span class="g-motto">TRUST YOUR WAY</span>
+      <span>© 2026 AKARBI · Maison marocaine de cuir contemporain</span>
+    </footer>
+
+    <form class="g-code" novalidate data-g-code>
+      <label class="g-code-l" for="g-code-in">Tu as un code ?</label>
+      <div class="g-code-row">
+        <input id="g-code-in" name="code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Code" maxlength="40">
+        <button class="g-code-b" type="submit">Entrer</button>
+      </div>
+      <p class="g-msg g-code-msg" id="g-code-msg" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</div>
+
+<script>
+/* ================= Porte d'entrée : compte à rebours + code =================
+   Le site reste fermé jusqu'à l'ouverture. Le champ « Tu as un code ? » l'ouvre plus tôt.
+   Le lien ?code=XXX (email J-1 par exemple) fait la même chose. */
+(function () {
+  'use strict';
+  const G = document.getElementById('gate');
+  if (!G) return;
+  const CFG = {
+  "ouverture": "2026-12-01T20:00:00+01:00",
+  "accesAnticipeHeures": 24,
+  "codes": [
+    "jy3hkq7vcx"
+  ],
+  "siteUrl": "/akarbi/index.html",
+  "klaviyoCompanyId": "",
+  "klaviyoListId": "",
+  "klaviyoRevision": "2026-07-15",
+  "doubleOptIn": true
+};
+  const $ = (s) => G.querySelector(s);
+  const LAUNCH = Date.parse(CFG.ouverture);
+  const EARLY = LAUNCH - CFG.accesAnticipeHeures * 36e5;
+  const KEY = 'akarbi-acces';
+
+  // empreinte du code (cyrb53) : le code lui-même n'est pas écrit dans la page
+  const hash = (str, seed = 0) => {
+    let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+    for (let i = 0, ch; i < str.length; i++) { ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+  };
+  const empreinte = (code) => hash('akarbi-code:' + String(code || '').trim().toUpperCase());
+  const bon = (code) => CFG.codes.includes(empreinte(code));
+  const lire = () => { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { return null; } };
+  const ecrire = (v) => { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) {} };
+
+  const inerte = (on) => { for (const el of document.body.children) if (el !== G && el.tagName !== 'SCRIPT') { if (on) el.setAttribute('inert', ''); else el.removeAttribute('inert'); } };
+  function ouvrir(anim) {
+    if (CFG.siteUrl) { location.replace(CFG.siteUrl); return; }   // version page séparée : on part vers le site
+    document.documentElement.classList.remove('gate-on');
+    inerte(false);
+    const fin = () => {
+      G.remove();
+      window.scrollTo(0, 0);
+      if (window.ScrollTrigger) requestAnimationFrame(() => window.ScrollTrigger.refresh());
+      const cible = document.getElementById('contenu') || document.querySelector('.nav__brand');
+      if (anim && cible && cible.focus) { cible.setAttribute('tabindex', '-1'); cible.focus({ preventScroll: true }); }
+    };
+    if (anim && !matchMedia('(prefers-reduced-motion: reduce)').matches) { G.classList.add('is-leaving'); setTimeout(fin, 900); }
+    else fin();
+  }
+
+  // 1. déjà ouvert ? (date passée, code mémorisé ou lien ?code=)
+  let lienCode = null;
+  try {
+    const q = new URLSearchParams(location.search);
+    lienCode = q.get('code');
+    if (lienCode !== null) { q.delete('code'); history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + location.hash); }
+  } catch (e) {}
+  const memo = lire();
+  if (Date.now() >= LAUNCH || (memo && CFG.codes.includes(memo.h) && memo.exp > Date.now()) || (lienCode && bon(lienCode))) {
+    if (lienCode && bon(lienCode)) ecrire({ h: empreinte(lienCode), exp: Date.now() + 30 * 864e5 });
+    ouvrir(false);
+    return;
+  }
+  document.documentElement.classList.add('gate-on');
+  document.addEventListener('DOMContentLoaded', () => { if (document.body.contains(G)) inerte(true); });
+
+  // 2. dates en français
+  const parts = (d, tz, o) => Object.fromEntries(new Intl.DateTimeFormat('fr-FR', { timeZone: tz, ...o }).formatToParts(d).map((p) => [p.type, p.value]));
+  const heure = (d, tz) => { const p = parts(d, tz, { hour: 'numeric', minute: '2-digit', hourCycle: 'h23' }); return `${+p.hour} h${p.minute !== '00' ? ' ' + p.minute : ''}`; };
+  const jour = (d, tz) => { const p = parts(d, tz, { weekday: 'long', day: 'numeric', month: 'long' }); return `${p.weekday} ${p.day === '1' ? '1<sup>er</sup>' : p.day} ${p.month}`; };
+  const serre = (s) => s.replace(/ /g, ' ');
+  const L = new Date(LAUNCH), E = new Date(EARLY);
+  const hC = heure(L, 'Africa/Casablanca'), hP = heure(L, 'Europe/Paris');
+  $('[data-g-date]').innerHTML = `Ouverture à tous : <b>${serre(jour(L, 'Africa/Casablanca'))}, ${hC}</b><span class="g-tz">${hP === hC ? 'Heure de Casablanca et de Paris' : `Heure de Casablanca · ${hP} à Paris`}</span>`;
+  const earlyTxt = serre(jour(E, 'Africa/Casablanca')).replace(/<\/?sup>/g, '') + ', ' + heure(E, 'Africa/Casablanca');
+  $('[data-g-join-d]').textContent = `Les inscrits entrent ${CFG.accesAnticipeHeures === 24 ? 'la veille' : CFG.accesAnticipeHeures + ' h avant'} : ${earlyTxt}.`;
+
+  // 3. compte à rebours
+  const U = { j: $('[data-g-u="j"]'), h: $('[data-g-u="h"]'), m: $('[data-g-u="m"]'), s: $('[data-g-u="s"]') };
+  const chiffres = (el, v) => { const t = String(v).padStart(2, '0'); if (el.dataset.v === t) return; el.dataset.v = t; el.innerHTML = [...t].map((c) => `<i>${c}</i>`).join(''); };
+  let fini = false;
+  function tick() {
+    const s = Math.floor(Math.max(0, LAUNCH - Date.now()) / 1000);
+    chiffres(U.j, Math.floor(s / 86400)); chiffres(U.h, Math.floor(s / 3600) % 24);
+    chiffres(U.m, Math.floor(s / 60) % 60); chiffres(U.s, s % 60);
+    if (Date.now() >= EARLY) $('[data-g-join-d]').textContent = 'Les inscrits sont déjà entrés. Inscris-toi pour ne rien rater de la suite.';
+    if (s === 0 && !fini) { fini = true; $('[data-g-titre]').textContent = 'Le cercle est ouvert'; setTimeout(() => ouvrir(true), 1200); }
+  }
+  tick();
+  const boucle = () => { if (!document.body.contains(G)) return; tick(); setTimeout(boucle, 1000 - (Date.now() % 1000) + 5); };
+  setTimeout(boucle, 1000 - (Date.now() % 1000) + 5);
+
+  // 4. code d'accès
+  const codeIn = $('#g-code-in'), codeMsg = $('#g-code-msg');
+  let essais = 0;
+  $('[data-g-code]').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const v = codeIn.value.trim();
+    if (!v) { codeMsg.textContent = 'Écris ton code.'; codeIn.focus(); return; }
+    if (bon(v)) {
+      ecrire({ h: empreinte(v), exp: Date.now() + 30 * 864e5 });
+      codeMsg.textContent = 'Bienvenue.';
+      ouvrir(true);
+    } else {
+      essais++;
+      codeIn.value = '';
+      codeMsg.textContent = 'Code incorrect. Vérifie-le et réessaie.';
+      const b = $('.g-code-b'); b.disabled = true; setTimeout(() => { b.disabled = false; codeIn.focus(); }, Math.min(4000, 400 * essais));
+    }
+  });
+
+  // 5. inscription au cercle (Klaviyo)
+  const form = $('[data-g-form]'), msg = $('#g-msg'), btn = $('#g-go'), email = $('#g-email'), ok = $('#g-ok');
+  const valid = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+  const utm = (() => { const o = {}; try { const q = new URLSearchParams(location.search); ['utm_source', 'utm_medium', 'utm_campaign'].forEach((k) => { const v = q.get(k); if (v) o[k] = v.slice(0, 80); }); } catch (e) {} return o; })();
+  async function inscrire(addr) {
+    if (!CFG.klaviyoCompanyId || !CFG.klaviyoListId) throw Object.assign(new Error('config'), { code: 'config' });
+    const body = { data: { type: 'subscription', attributes: {
+      custom_source: 'Compte à rebours Chapter 01' + (utm.utm_source ? ' · ' + utm.utm_source : ''),
+      profile: { data: { type: 'profile', attributes: {
+        email: addr,
+        properties: { chapitre: 'Chapter 01', inscription_page: 'compte-a-rebours', jours_avant_ouverture: Math.ceil(Math.max(0, LAUNCH - Date.now()) / 864e5), ...utm },
+        subscriptions: { email: { marketing: { consent: 'SUBSCRIBED' } } }
+      } } }
+    }, relationships: { list: { data: { type: 'list', id: CFG.klaviyoListId } } } } };
+    const r = await fetch('https://a.klaviyo.com/client/subscriptions?company_id=' + encodeURIComponent(CFG.klaviyoCompanyId), {
+      method: 'POST', headers: { 'content-type': 'application/json', revision: CFG.klaviyoRevision }, body: JSON.stringify(body)
+    });
+    if (!r.ok) throw Object.assign(new Error('http ' + r.status), { code: 'http' });
+  }
+  function merci() {
+    form.hidden = true;
+    $('[data-g-done-d]').textContent = (CFG.doubleOptIn ? 'Confirme ton inscription dans l’email que tu vas recevoir. ' : '')
+      + (Date.now() >= EARLY ? 'On te tient au courant de la suite.' : `Le lien d’accès anticipé arrive le ${earlyTxt}.`);
+    $('[data-g-done]').hidden = false; $('#g-done-t').focus();
+  }
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const v = email.value.trim();
+    if (!valid(v)) { msg.textContent = 'Cette adresse ne semble pas valide. Vérifie-la puis réessaie.'; email.focus(); return; }
+    if (!ok.checked) { msg.textContent = 'Coche la case pour recevoir l’accès anticipé.'; ok.focus(); return; }
+    if ($('#g-site').value) { merci(); return; }
+    msg.textContent = ''; btn.disabled = true; btn.textContent = 'Envoi…';
+    try { await inscrire(v); merci(); }
+    catch (err) { msg.textContent = err.code === 'config' ? 'Les inscriptions ne sont pas encore branchées : il manque la clé Klaviyo dans la page.' : 'L’inscription n’est pas partie. Vérifie ta connexion et réessaie.'; }
+    finally { btn.disabled = false; btn.textContent = 'Rejoindre le cercle'; }
+  });
+})();
+
+</script>
+</body>
+</html>
