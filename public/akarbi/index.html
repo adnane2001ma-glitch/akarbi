@@ -155,6 +155,9 @@ section { position: relative; }
 .hero-dark { position: absolute; inset: 0; z-index: 4; background: #030605; opacity: 0; pointer-events: none; }
 .h-hero .scrollcue { z-index: 5; }
 .scrollcue { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); display: grid; justify-items: center; gap: 10px; font: 600 10px/1 var(--sans); letter-spacing: .3em; text-transform: uppercase; color: var(--iv60); }
+/* au début de l'accueil, « Faites défiler » est grand, dans la même voix que les textes de la vidéo */
+.h-hero .scrollcue { bottom: clamp(22px, 5vh, 48px); gap: 14px; font: italic 400 clamp(24px, 2.4vw, 38px)/1.1 var(--serif); letter-spacing: .02em; text-transform: none; color: var(--ivory); text-shadow: 0 2px 18px rgba(0, 0, 0, .6); white-space: nowrap; }
+.h-hero .scrollcue i { height: 56px; }
 .scrollcue i { width: 1px; height: 44px; background: linear-gradient(var(--ivory), transparent); animation: cue 2.2s var(--ease) infinite; transform-origin: top; }
 @keyframes cue { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
 
@@ -877,6 +880,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     <p class="lead" data-reveal>Le compte AKARBI montre la marque. Le compte ACHIRA montre le chemin.</p>
     <div class="row-cta" data-reveal style="justify-content:center">
       <a class="btn btn--solid" href="#/produits">Commencer par une pièce</a>
+      <a class="btn btn--line" href="https://achira-weld.vercel.app" target="_blank" rel="noopener">Le site ACHIRA ↗</a>
       <span class="btn btn--line" aria-disabled="true">Instagram ACHIRA · bientôt</span>
     </div>
   </section>
@@ -1334,6 +1338,111 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     }
   });
 
+  /* ================= Accueil : défilement texte par texte =================
+     Chaque geste (molette, glissé, flèches) fait jouer la vidéo jusqu'au texte suivant, puis la page attend
+     le geste suivant. Chaque section épinglée déclare les moments (temps de sa timeline) où un texte est lisible. */
+  let SL = null;                                   // sections de l'accueil : { st, times } ; null hors de l'accueil
+  const fullAt = (at, f, parts) => at + f * (1 + 0.3 * (parts.length - 1)) + 0.012;
+  function slideStops() {
+    const out = [];
+    for (const s of SL) {
+      const len = s.st.end - s.st.start, d = s.tl.duration();
+      const ys = s.times.map((t) => Math.round(s.st.start + len * Math.min(1, t / d))).sort((a, b) => a - b);
+      // le haut de la section n'est un arrêt que s'il montre déjà quelque chose (sinon on va droit au premier texte)
+      const first = ys[0] - s.st.start > len * 0.05 ? [Math.round(s.st.start)] : [];
+      out.push({ start: Math.round(s.st.start), end: Math.round(s.st.end), ys: [...first, ...ys] });
+    }
+    return out.sort((a, b) => a.start - b.start);
+  }
+  // prochain arrêt depuis y dans la direction dir ; null = défilement normal (sections de contenu)
+  function slideTarget(y, dir) {
+    const secs = slideStops(), H = window.innerHeight, near = H * 1.15;
+    if (dir > 0) {
+      const z = secs.find((s) => y >= s.start - 3 && y < s.end - 3);
+      if (z) {
+        const n = z.ys.find((v) => v > y + 3);
+        if (n !== undefined) return n;
+        const next = secs.find((s) => s.start > z.end - 3 && s.start - z.end <= near);   // section épinglée juste après : on enchaîne
+        return next ? next.ys[0] : z.end;
+      }
+      const next = secs.find((s) => s.start > y + 3 && s.start - y <= near);
+      return next ? next.ys[0] : null;
+    }
+    const z = secs.find((s) => y > s.start + 3 && y <= s.end + 3);
+    if (z) {
+      const p = [...z.ys].reverse().find((v) => v < y - 3);
+      if (p !== undefined && p > z.start + 3) return p;
+      const prev = [...secs].reverse().find((s) => s.end < z.start + 3 && z.start - s.end <= near);
+      return prev ? prev.ys[prev.ys.length - 1] : z.start;
+    }
+    const prev = [...secs].reverse().find((s) => s.end < y - 3 && y - s.end <= near);
+    return prev ? prev.ys[prev.ys.length - 1] : null;
+  }
+  let sliding = false, slideEnd = 0, lastDir = 1;
+  function slideTo(y) {
+    sliding = true;
+    const dist = Math.abs(y - window.scrollY);
+    // durée proportionnelle à la distance : la vidéo joue à un rythme proche du réel
+    const duration = Math.min(3, Math.max(0.7, dist / window.innerHeight * 0.5));
+    gsap.to(window, { scrollTo: { y, autoKill: false }, duration, ease: 'power1.inOut', overwrite: true,
+      onComplete: () => { sliding = false; slideEnd = performance.now(); } });
+  }
+  const slideOn = () => SL && !RM && !cartEl.classList.contains('open') && !mm.classList.contains('open');
+  function slideStep(dir, e) {
+    if (!slideOn()) return false;
+    if (sliding) { if (e) e.preventDefault(); return true; }
+    const t = slideTarget(window.scrollY, dir);
+    if (t === null) return false;
+    if (e) e.preventDefault();
+    lastDir = dir; slideTo(t);
+    return true;
+  }
+  let lastWheel = 0;
+  window.addEventListener('wheel', (e) => {
+    if (!slideOn() || e.ctrlKey || Math.abs(e.deltaY) < 2) return;
+    const now = performance.now(), gap = now - lastWheel; lastWheel = now;
+    // la fin d'un élan de pavé tactile ne doit pas déclencher le texte suivant
+    if (!sliding && now - slideEnd < 650 && gap < 180 && slideTarget(window.scrollY, Math.sign(e.deltaY)) !== null) { e.preventDefault(); return; }
+    slideStep(Math.sign(e.deltaY), e);
+  }, { passive: false });
+  let touchY = null, touchHeld = false;
+  window.addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; touchHeld = false; }, { passive: true });
+  window.addEventListener('touchmove', (e) => {
+    if (touchY === null || !slideOn()) return;
+    const dy = touchY - e.touches[0].clientY;
+    if (sliding || touchHeld) { e.preventDefault(); return; }
+    if (Math.abs(dy) < 8) return;
+    // dans une section vidéo, le doigt ne fait pas défiler : il déclenche le texte suivant au relâché
+    if (slideTarget(window.scrollY, Math.sign(dy)) !== null) { touchHeld = true; e.preventDefault(); }
+  }, { passive: false });
+  window.addEventListener('touchend', (e) => {
+    if (touchY === null) return;
+    const dy = touchY - e.changedTouches[0].clientY; touchY = null;
+    if (touchHeld && Math.abs(dy) > 24) slideStep(Math.sign(dy));
+    touchHeld = false;
+  }, { passive: true });
+  window.addEventListener('keydown', (e) => {
+    if (e.altKey || e.ctrlKey || e.metaKey || e.target.closest('input, textarea, select, [contenteditable]')) return;
+    const dir = { ArrowDown: 1, PageDown: 1, ' ': e.shiftKey ? -1 : 1, ArrowUp: -1, PageUp: -1 }[e.key];
+    if (dir) slideStep(dir, e);
+  });
+  // barre de défilement ou élan tactile arrêté au milieu d'une vidéo : on finit jusqu'au texte suivant
+  let idleT, lastY0 = window.scrollY;
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (y !== lastY0) { if (!sliding) lastDir = Math.sign(y - lastY0); lastY0 = y; }
+    clearTimeout(idleT);
+    if (sliding || !slideOn()) return;
+    idleT = setTimeout(() => {
+      if (sliding || !slideOn() || touchY !== null) return;
+      const y = window.scrollY, secs = slideStops();
+      const z = secs.find((s) => y > s.start + 3 && y < s.end - 3);
+      if (!z || z.ys.some((v) => Math.abs(v - y) <= 4)) return;
+      const t = slideTarget(y, lastDir);
+      if (t !== null) slideTo(t);
+    }, 220);
+  }, { passive: true });
+
   /* ================= Animations génériques ================= */
   function reveals(scope) {
     $$('[data-reveal]', scope).forEach((el) => {
@@ -1385,12 +1494,14 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     const state = { t: 0 };
     const tl = gsap.timeline({ defaults: { ease: 'none' } });
     tl.to(state, { t: dur, duration: span }, 0);
-    const f = 0.018;
+    const f = 0.018, times = [];
     $$('[data-t]', sec).forEach((ov) => {
       const [a, b] = ov.dataset.t.split(',').map(Number);
       const pin = Math.max(0.004, a / dur * span), pout = b / dur * span;
       const parts = overlayIn(tl, ov, pin, f);
       if (b < 90) overlayOut(tl, parts, pout, f);
+      const tin = fullAt(pin, f, parts);
+      times.push(b < 90 ? Math.min(tin, (tin + pout - f * 0.8) / 2) : tin);
     });
     tl.set({}, {}, 1);
     if (sec.dataset.inset) {
@@ -1413,7 +1524,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
       apply();
     }
     const rail = $('[data-rail]', sec);
-    ScrollTrigger.create({
+    const st = ScrollTrigger.create({
       trigger: sec, start: 'top top', end: vh(len), pin: true, scrub: 1, animation: tl, anticipatePin: 1,
       onUpdate: rail ? () => {
         const items = $$('li', rail); let k = 0;
@@ -1421,6 +1532,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
         items.forEach((li, i) => li.classList.toggle('on', i === k));
       } : undefined,
     });
+    if (SL) SL.push({ st, tl, times });
     scrubs.push({ video: v, state, dur });
     ScrollTrigger.create({ trigger: sec, start: 'top bottom+=160%', once: true, onEnter: () => loadVideo(v) });
   }
@@ -1461,6 +1573,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
 
   /* ================= Accueil ================= */
   function initHome(page) {
+    SL = [];
     // 1. Tannerie : la vidéo avance avec le scroll, le vol du scarabée fait apparaître AKARBI
     (() => {
       const sec = $('#h-tannerie', page);
@@ -1502,7 +1615,9 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
         .to($('[data-hero-dark]', sec), { opacity: 0.55, duration: 0.09 }, 0.9)
         .set({}, {}, 1);
       tl.eventCallback('onUpdate', paint);
-      ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(400), pin: true, scrub: 1, animation: tl, anticipatePin: 1, onRefresh: paint });
+      const st = ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(400), pin: true, scrub: 1, animation: tl, anticipatePin: 1, onRefresh: paint });
+      // premier geste : le scarabée vole, AKARBI se révèle et la vidéo s'arrête sur le texte
+      SL.push({ st, tl, times: [fullAt(0.74, 0.03, parts)] });
       scrubs.push({ video: v, state, dur });
       const label = $('[data-cue-label]', sec);
       loadVideo(v).then(() => { if (label) label.textContent = 'Faites défiler'; sec.classList.add('is-ready'); paint(); });
@@ -1533,10 +1648,12 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
         .to(slit, { v: 0, duration: 0.12, ease: 'power2.inOut', onUpdate: applySlit }, 0.11)
         .set(stage, { backgroundColor: '#030605' }, 0.235)
         .to(state, { t: dur, duration: 0.48 }, 0.22);
+      const times = [];
       $$('[data-pa-t]', sec).forEach((ov) => {
         const [a, b] = ov.dataset.paT.split(',').map(Number);
         const parts = overlayIn(tl, ov, a, 0.022);
         overlayOut(tl, parts, b, 0.022);
+        times.push(fullAt(a, 0.022, parts));
       });
       // écran titre ACHIRA, puis la scène s'éteint avant la partie suivante
       const dim = $('[data-pa-dim]', sec);
@@ -1545,7 +1662,9 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
       overlayOut(tl, tparts, 0.88, 0.03);
       tl.to(dim, { opacity: 0.8, duration: 0.07 }, 0.87)
         .set({}, {}, 0.96);
-      ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(800), pin: true, scrub: 1, animation: tl, anticipatePin: 1, invalidateOnRefresh: true });
+      times.push(fullAt(0.72, 0.03, tparts));
+      const st = ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(800), pin: true, scrub: 1, animation: tl, anticipatePin: 1, invalidateOnRefresh: true });
+      SL.push({ st, tl, times });
       tl.eventCallback('onUpdate', () => { const t = tl.progress() < 0.145 ? 'light' : 'dark'; if (sec.dataset.tone !== t) { sec.dataset.tone = t; navTick(); } });
       scrubs.push({ video: v, state, dur });
       ScrollTrigger.create({ trigger: sec, start: 'top bottom+=160%', once: true, onEnter: () => loadVideo(v) });
@@ -1559,11 +1678,15 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
       // --- partie coffre + lettre
       const cTl = gsap.timeline({ defaults: { ease: 'none' } });
       cTl.to(state, { t: dur, duration: 0.6 }, 0);
+      const times = [];
       $$('[data-cf-t]', sec).forEach((ov) => {
         const [a, b] = ov.dataset.cfT.split(',').map(Number);
         const parts = overlayIn(cTl, ov, a, 0.025);
         overlayOut(cTl, parts, b, 0.025);
+        times.push(fullAt(a, 0.025, parts));
       });
+      // la lettre lisible, puis TRUST YOUR WAY (fTl commence à 0.88 et dure 0.7) et enfin les liens
+      times.push(portrait() ? 0.71 : 0.86, 0.88 + 0.5 * 0.7, 0.88 + 0.9 * 0.7 + 0.01);
       const frame = $('[data-cf-frame]', sec), note = $('[data-cf-note]', sec);
       const fr = { k: 1, c: 0.66 };
       const applyFrame = () => {
@@ -1652,7 +1775,8 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
         const t = fTl.progress() > 0.7 ? 'light' : 'dark';
         if (sec.dataset.tone !== t) { sec.dataset.tone = t; navTick(); }
       });
-      ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(880), pin: true, scrub: 1, animation: tl, anticipatePin: 1, onRefresh: () => { applyFrame(); draw(); } });
+      const st = ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(880), pin: true, scrub: 1, animation: tl, anticipatePin: 1, onRefresh: () => { applyFrame(); draw(); } });
+      SL.push({ st, tl, times });
       scrubs.push({ video: v, state, dur });
       ScrollTrigger.create({ trigger: sec, start: 'top bottom+=160%', once: true, onEnter: () => loadVideo(v) });
       draw();
@@ -1708,7 +1832,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     let name = parts[0] || 'home';
     if (!['home', 'produits', 'produit', 'achira', 'univers'].includes(name)) name = 'home';
     if (ctx) { ctx.revert(); ctx = null; }
-    scrubs.length = 0;
+    scrubs.length = 0; SL = null; sliding = false;
     closeCart(); closeMenu();
     $$('.page').forEach((p) => { p.hidden = p.dataset.page !== name; });
     if (name === 'produit' && !PRODUCTS[parts[1]]) { location.replace('#/produits'); return; }
