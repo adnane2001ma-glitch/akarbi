@@ -1,0 +1,416 @@
+{
+  "tannerie": {
+    "vid": "tannerie",
+    "video": "",
+    "poster": "",
+    "dur": 4.04,
+    "len": 400,
+    "after": [
+      {
+        "k": "lead",
+        "t": "Fès nourrit la matière. Le chemin fait le reste."
+      },
+      {
+        "k": "motto",
+        "t": "Trust your way"
+      }
+    ],
+    "cue": "Faites défiler"
+  },
+  "veste": {
+    "vid": "veste",
+    "video": "",
+    "poster": "",
+    "dur": 10.04,
+    "len": 580,
+    "inset": [
+      3.2,
+      4.4
+    ],
+    "ov": [
+      {
+        "pos": "c",
+        "at": 0.05,
+        "out": 1.15,
+        "style": "",
+        "parts": [
+          {
+            "k": "lead-xl",
+            "t": "Tout commence dans l’ombre."
+          }
+        ]
+      },
+      {
+        "pos": "l",
+        "at": 1.3,
+        "out": 2.45,
+        "style": "",
+        "parts": [
+          {
+            "k": "eyebrow",
+            "t": "Chapter 01 — Première trace"
+          },
+          {
+            "k": "h2",
+            "t": "Veste Signature"
+          }
+        ]
+      },
+      {
+        "pos": "r",
+        "at": 2.6,
+        "out": 4.7,
+        "style": "",
+        "parts": [
+          {
+            "k": "h3",
+            "t": "Chaque pièce a sa place."
+          },
+          {
+            "k": "body",
+            "t": "Panneau courbe, col montant, zip central : une silhouette pensée comme un ensemble."
+          }
+        ]
+      },
+      {
+        "pos": "l",
+        "at": 5,
+        "out": 6.6,
+        "style": "",
+        "parts": [
+          {
+            "k": "h3",
+            "t": "Le cuir donne le ton."
+          },
+          {
+            "k": "body",
+            "t": "Un grain croco embossé qui accroche la lumière et révèle le travail de la matière."
+          }
+        ]
+      },
+      {
+        "pos": "r",
+        "at": 6.8,
+        "out": 8.15,
+        "style": "",
+        "parts": [
+          {
+            "k": "h3",
+            "t": "Une trace bordeaux."
+          },
+          {
+            "k": "body",
+            "t": "Aux épaules, le détail qui signe la silhouette."
+          }
+        ]
+      },
+      {
+        "pos": "bl",
+        "at": 8.5,
+        "out": null,
+        "style": "",
+        "parts": [
+          {
+            "k": "h2",
+            "t": "Une signature"
+          },
+          {
+            "k": "lead",
+            "t": "qui se lit dans le détail."
+          },
+          {
+            "k": "link",
+            "t": "Voir la collection",
+            "href": "#h-collection"
+          }
+        ]
+      }
+    ]
+  },
+  "atelier": {
+    "vid": "atelier",
+    "video": "",
+    "poster": "",
+    "dur": 13.04,
+    "len": 680,
+    "inset": null,
+    "ov": [
+      {
+        "pos": "tl",
+        "at": 0.1,
+        "out": 1.75,
+        "style": "",
+        "parts": [
+          {
+            "k": "eyebrow",
+            "t": "L’atelier"
+          },
+          {
+            "k": "h2",
+            "t": "Du geste à la pièce."
+          }
+        ]
+      },
+      {
+        "pos": "bl",
+        "at": 0.1,
+        "out": 1.75,
+        "style": "step",
+        "parts": [
+          {
+            "k": "num",
+            "t": "01"
+          },
+          {
+            "k": "step-title",
+            "t": "Tracer le patron"
+          },
+          {
+            "k": "step-txt",
+            "t": "Tout part d’une ligne juste."
+          }
+        ]
+      },
+      {
+        "pos": "r",
+        "at": 1.9,
+        "out": 4.3,
+        "style": "step",
+        "parts": [
+          {
+            "k": "num",
+            "t": "02"
+          },
+          {
+            "k": "step-title",
+            "t": "Couper au plus juste"
+          },
+          {
+            "k": "step-txt",
+            "t": "Le cuir se lit avant de se couper."
+          }
+        ]
+      },
+      {
+        "pos": "l",
+        "at": 4.4,
+        "out": 5.85,
+        "style": "step",
+        "parts": [
+          {
+            "k": "num",
+            "t": "03"
+          },
+          {
+            "k": "step-title",
+            "t": "Assembler"
+          },
+          {
+            "k": "step-txt",
+            "t": "Les mains guident chaque panneau."
+          }
+        ]
+      },
+      {
+        "pos": "br",
+        "at": 6,
+        "out": 7.9,
+        "style": "step",
+        "parts": [
+          {
+            "k": "num",
+            "t": "04"
+          },
+          {
+            "k": "step-title",
+            "t": "Point après point"
+          },
+          {
+            "k": "step-txt",
+            "t": "La couture dessine la ligne de la veste."
+          }
+        ]
+      },
+      {
+        "pos": "bl",
+        "at": 8,
+        "out": 9.9,
+        "style": "step",
+        "parts": [
+          {
+            "k": "num",
+            "t": "05"
+          },
+          {
+            "k": "step-title",
+            "t": "Le temps de la machine"
+          },
+          {
+            "k": "step-txt",
+            "t": "Chaque pièce prend le temps qu’il faut."
+          }
+        ]
+      },
+      {
+        "pos": "l",
+        "at": 10,
+        "out": null,
+        "style": "step-end",
+        "parts": [
+          {
+            "k": "h2",
+            "t": "La matière prend forme."
+          },
+          {
+            "k": "step-txt",
+            "t": "Fabrication marocaine, en petites séries."
+          }
+        ]
+      }
+    ],
+    "rail": [
+      {
+        "at": 0,
+        "t": "Tracer"
+      },
+      {
+        "at": 1.9,
+        "t": "Couper"
+      },
+      {
+        "at": 4.4,
+        "t": "Assembler"
+      },
+      {
+        "at": 6,
+        "t": "Coudre"
+      },
+      {
+        "at": 8,
+        "t": "Machine"
+      },
+      {
+        "at": 10,
+        "t": "La pièce"
+      }
+    ]
+  },
+  "pa": {
+    "vid": "achira",
+    "video": "",
+    "poster": "",
+    "dur": 4.04,
+    "len": 800,
+    "head": "Deux parcours. Une même envie d’avancer.",
+    "ov": [
+      {
+        "pos": "c",
+        "at": 0.17,
+        "out": 0.93,
+        "style": "",
+        "parts": [
+          {
+            "k": "lead-xl",
+            "t": "Ils ne se connaissent pas."
+          }
+        ]
+      },
+      {
+        "pos": "c",
+        "at": 1.09,
+        "out": 1.94,
+        "style": "",
+        "parts": [
+          {
+            "k": "lead-xl",
+            "t": "Ils portent le même signe."
+          }
+        ]
+      },
+      {
+        "pos": "c",
+        "at": 2.1,
+        "out": 3.03,
+        "style": "",
+        "parts": [
+          {
+            "k": "lead-xl",
+            "t": "Des histoires singulières."
+          },
+          {
+            "k": "lead",
+            "t": "Des valeurs partagées."
+          }
+        ]
+      },
+      {
+        "pos": "c",
+        "at": 3.2,
+        "out": 4.04,
+        "style": "",
+        "parts": [
+          {
+            "k": "lead-xl",
+            "t": "Appartenir avant de posséder."
+          }
+        ]
+      }
+    ],
+    "title": [
+      {
+        "k": "eyebrow",
+        "t": "Le cercle AKARBI"
+      },
+      {
+        "k": "display",
+        "t": "ACHIRA"
+      },
+      {
+        "k": "lead",
+        "t": "Un cercle qui avance ensemble."
+      }
+    ]
+  },
+  "coffre": {
+    "vid": "coffre",
+    "video": "",
+    "poster": "",
+    "dur": 7.04,
+    "len": 880,
+    "ov": [
+      {
+        "pos": "t",
+        "at": 0.23,
+        "out": 2.35,
+        "style": "",
+        "parts": [
+          {
+            "k": "lead-xl",
+            "t": "Une lettre t’attend."
+          }
+        ]
+      },
+      {
+        "pos": "b",
+        "at": 5.4,
+        "out": 7.51,
+        "style": "",
+        "parts": [
+          {
+            "k": "eyebrow",
+            "t": "À toi qui avances — signé ACHIRA"
+          }
+        ]
+      }
+    ],
+    "letter": [
+      "À toi qui avances,",
+      "Il y aura des détours, des doutes et des jours plus lourds que les autres. Mais chaque pas laissera sa trace.",
+      "Le trésor, c’est le chemin parcouru.",
+      "Garde confiance en ce que tu construis."
+    ],
+    "sign": "ACHIRA",
+    "finTitle": "Trust your way",
+    "finSub": "AKARBI"
+  }
+}

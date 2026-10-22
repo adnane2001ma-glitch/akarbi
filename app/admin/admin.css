@@ -111,3 +111,65 @@ body:has(.admin) { overflow: auto; }
 .a-entete-he__img { aspect-ratio: 21 / 9; border-radius: 10px; overflow: hidden; background: var(--p800); }
 .a-entete-he__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
 @media (max-width: 720px) { .a-entete-he { grid-template-columns: 1fr; } }
+
+/* ---------- Accueil : mise en scène des vidéos ---------- */
+.a-wrap--large { max-width: 1320px; }
+.ak-grille { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 960px) { .ak-grille { grid-template-columns: 1fr; } }
+.ak-grille > .a-pile:first-child { position: sticky; top: 84px; }
+@media (max-width: 960px) { .ak-grille > .a-pile:first-child { position: static; } }
+.ak-etat { padding: 6px 12px; border-radius: 999px; font: 600 11px/1.3 'Hanken Grotesk', sans-serif; letter-spacing: .12em; text-transform: uppercase; border: 1px solid var(--ligne); color: var(--iv3); }
+.ak-etat--ok { color: var(--champ); border-color: rgba(197,166,118,.4); }
+.ak-etat--erreur { color: #f6c6cd; border-color: rgba(240,163,174,.4); }
+.ak-horloge { font: 600 13px/1 'Hanken Grotesk', sans-serif; font-variant-numeric: tabular-nums; padding: 6px 10px; border-radius: 8px; background: var(--nuit); border: 1px solid var(--ligne); }
+.ak-code { font-size: 12px; color: var(--iv2); word-break: break-all; }
+.ak-champs { display: grid; gap: 14px; }
+
+/* aperçu : la vidéo au moment choisi et les textes visibles, à leur place */
+.ak-scene { position: relative; aspect-ratio: 16 / 9; margin-top: 14px; border-radius: 10px; overflow: hidden; background: #000; container-type: inline-size; }
+.ak-scene video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ak-ombre { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(5,15,12,.45), transparent 45%, transparent 55%, rgba(5,15,12,.45)); pointer-events: none; }
+.ak-calque { position: absolute; inset: 0; pointer-events: none; }
+.ak-ov { position: absolute; display: grid; gap: .6cqi; max-width: 46%; color: #eee5d3; }
+.ak-ov--tl { left: 4%; top: 12%; } .ak-ov--t { left: 50%; top: 12%; transform: translateX(-50%); text-align: center; justify-items: center; }
+.ak-ov--tr { right: 4%; top: 12%; text-align: right; justify-items: end; }
+.ak-ov--l { left: 4%; top: 50%; transform: translateY(-50%); } .ak-ov--r { right: 4%; top: 50%; transform: translateY(-50%); text-align: right; justify-items: end; }
+.ak-ov--c { left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; justify-items: center; max-width: 80%; }
+.ak-ov--bl { left: 4%; bottom: 12%; } .ak-ov--b { left: 50%; bottom: 10%; transform: translateX(-50%); text-align: center; justify-items: center; max-width: 80%; }
+.ak-ov--br { right: 4%; bottom: 12%; text-align: right; justify-items: end; }
+.ak-ov.is-sel { outline: 1px dashed var(--champ); outline-offset: 6px; }
+.ak-l { display: block; }
+.ak-l--lead-xl { font: italic 400 3.4cqi/1.1 'Cormorant Garamond', serif; }
+.ak-l--lead, .ak-l--motto { font: italic 400 2.2cqi/1.2 'Cormorant Garamond', serif; color: rgba(238,229,211,.82); }
+.ak-l--eyebrow { font: 600 1cqi/1.4 'Hanken Grotesk', sans-serif; letter-spacing: .26em; text-transform: uppercase; color: rgba(238,229,211,.62); }
+.ak-l--h2, .ak-l--display, .ak-l--marque { font: 400 4.2cqi/.95 'AKARBI', 'Hanken Grotesk', sans-serif; letter-spacing: .03em; }
+.ak-l--display, .ak-l--marque { font-size: 7cqi; }
+.ak-l--h3, .ak-l--step-title { font: 400 2.4cqi/1 'AKARBI', 'Hanken Grotesk', sans-serif; letter-spacing: .04em; }
+.ak-l--body, .ak-l--step-txt { font-size: 1.3cqi; line-height: 1.5; color: rgba(238,229,211,.82); }
+.ak-l--num { font: 400 3cqi/1 'AKARBI', sans-serif; color: var(--champ); }
+.ak-l--link { font: 600 1cqi/1 'Hanken Grotesk', sans-serif; letter-spacing: .2em; text-transform: uppercase; border-bottom: 1px solid; padding-bottom: .5cqi; }
+.ak-lettre { max-width: 60%; background: rgba(238,229,211,.92); color: var(--nuit); padding: 3cqi; border-radius: 6px; }
+.ak-lettre .ak-l { color: var(--nuit); }
+.ak-curseur { flex: 1; accent-color: var(--achira); }
+
+/* frise : les textes sur la durée */
+.ak-frise { position: relative; margin: 12px 0 8px; border-radius: 8px; background: var(--nuit); border: 1px solid var(--ligne); }
+.ak-bloc { position: absolute; height: 22px; padding: 0 6px; border-radius: 5px; border: 1px solid rgba(197,166,118,.35); background: rgba(197,166,118,.14); color: var(--ivoire);
+  font: 500 11px/20px 'Hanken Grotesk', sans-serif; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; cursor: pointer; }
+.ak-bloc.is-sel { background: var(--achira); border-color: var(--achira); }
+.ak-tete { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--ivoire); pointer-events: none; }
+.ak-repere { position: absolute; top: -18px; font-size: 10px; color: var(--iv3); transform: translateX(-50%); }
+
+/* cartes des textes */
+.ak-carte { border: 1px solid var(--ligne); border-radius: 12px; padding: 12px 14px; background: var(--nuit); }
+.ak-carte.is-on { border-color: rgba(197,166,118,.5); }
+.ak-carte__h { display: flex; align-items: center; gap: 10px; }
+.ak-carte__go { flex: 1; display: grid; gap: 2px; text-align: left; background: none; border: 0; color: inherit; cursor: pointer; padding: 4px 0; font: inherit; }
+.ak-carte__go b { font-weight: 600; }
+.ak-carte.is-on .ak-carte__h { margin-bottom: 12px; }
+.ak-pos { display: grid; grid-template-columns: repeat(3, 30px); gap: 4px; padding: 6px; width: max-content; border-radius: 8px; border: 1px solid var(--ligne); }
+.ak-pos button { width: 30px; height: 20px; border-radius: 4px; border: 1px solid var(--ligne); background: transparent; cursor: pointer; }
+.ak-pos button[aria-pressed=true] { background: var(--champ); border-color: var(--champ); }
+.ak-ligne { display: grid; grid-template-columns: 150px minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.ak-ligne:has(input + input) { grid-template-columns: 150px minmax(0, 1fr) minmax(0, .8fr) auto; }
+@media (max-width: 560px) { .ak-ligne, .ak-ligne:has(input + input) { grid-template-columns: 1fr auto; } .ak-ligne select { grid-column: 1 / -1; } }

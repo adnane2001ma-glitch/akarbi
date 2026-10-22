@@ -2258,7 +2258,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     const name = v.dataset.vid;
     if (v._loading) return v._loading;
     v._loading = (async () => {
-      const url = `vid/${name}.webm`;
+      const url = v.dataset.src || `vid/${name}.webm`;   // vidéo remplacée depuis le dashboard, sinon celle du site
       v.preload = 'auto';
       if (v.currentSrc !== url) v.src = url;
       await new Promise((res) => {
@@ -2582,7 +2582,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     // 1. Tannerie : la vidéo avance avec le scroll, le vol du scarabée fait apparaître AKARBI
     (() => {
       const sec = $('#h-tannerie', page);
-      const v = $('video', sec), dur = 4.04, state = { t: 0 };
+      const v = $('video', sec), dur = parseFloat(sec.dataset.dur) || 4.04, state = { t: 0 };
       const word = $('[data-hero-word]', sec), glint = $('[data-hero-glint]', sec);
       // trajectoire horizontale du scarabée (fraction de la largeur de l'image), relevée image par image
       const PATH = [[2.3, .51], [2.4, .52], [2.5, .53], [2.6, .545], [2.7, .59], [2.8, .624], [2.9, .66], [3.0, .70], [3.1, .74], [3.2, .80], [3.3, .855], [3.4, .905], [3.5, .945], [3.6, .984], [3.7, 1.04], [3.8, 1.1]];
@@ -2625,7 +2625,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
       if (heroTick) gsap.ticker.remove(heroTick);
       heroTick = () => { if (!v.paused) paint(); };
       gsap.ticker.add(heroTick);
-      const st = ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(400), pin: true, scrub: 1, animation: tl, anticipatePin: 1, onRefresh: paint });
+      const st = ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(parseFloat(sec.dataset.len) || 400), pin: true, scrub: 1, animation: tl, anticipatePin: 1, onRefresh: paint });
       // premier geste : le scarabée vole, AKARBI se révèle et la vidéo s'arrête sur le texte
       SL.push({ st, tl, times: [fullAt(0.74, 0.03, parts)] });
       scrubs.push({ video: v, state, dur });
@@ -2642,7 +2642,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     (() => {
       const sec = $('#h-pa', page);
       const v = $('video', sec), vwrap = $('.pa__video', sec);
-      const dur = 4.04, state = { t: 0 };
+      const dur = parseFloat(sec.dataset.dur) || 4.04, state = { t: 0 };
       const stage = $('[data-pa-stage]', sec);
       const tl = gsap.timeline({ defaults: { ease: 'none' } });
       // ouverture symétrique de la vidéo entre les deux portraits (valeur pilotée à la main :
@@ -2667,7 +2667,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
       overlayOut(tl, tparts, 0.88, 0.03);
       tl.to(dim, { opacity: 0.8, duration: 0.07 }, 0.87)
         .set({}, {}, 0.96);
-      const st = ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(800), pin: true, scrub: 1, animation: tl, anticipatePin: 1, invalidateOnRefresh: true });
+      const st = ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(parseFloat(sec.dataset.len) || 800), pin: true, scrub: 1, animation: tl, anticipatePin: 1, invalidateOnRefresh: true });
       SL.push({ st, tl, times });
       tl.eventCallback('onUpdate', () => { const t = tl.progress() < 0.145 ? 'light' : 'dark'; if (sec.dataset.tone !== t) { sec.dataset.tone = t; navTick(); } });
       scrubs.push({ video: v, state, dur });
@@ -2678,7 +2678,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     // La lettre se déchire depuis son centre et laisse apparaître la page finale.
     (() => {
       const sec = $('#h-coffre', page);
-      const v = $('video', sec), dur = 7.04, state = { t: 0 };
+      const v = $('video', sec), dur = parseFloat(sec.dataset.dur) || 7.04, state = { t: 0 };
       // --- partie coffre + lettre
       const cTl = gsap.timeline({ defaults: { ease: 'none' } });
       cTl.to(state, { t: dur, duration: 0.6 }, 0);
@@ -2773,7 +2773,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
         const t = fTl.progress() > 0.7 ? 'light' : 'dark';
         if (sec.dataset.tone !== t) { sec.dataset.tone = t; navTick(); }
       });
-      const st = ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(880), pin: true, scrub: 1, animation: tl, anticipatePin: 1, onRefresh: () => { applyFrame(); draw(); } });
+      const st = ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(parseFloat(sec.dataset.len) || 880), pin: true, scrub: 1, animation: tl, anticipatePin: 1, onRefresh: () => { applyFrame(); draw(); } });
       SL.push({ st, tl, times });
       scrubs.push({ video: v, state, dur });
       ScrollTrigger.create({ trigger: sec, start: 'top bottom+=160%', once: true, onEnter: () => loadVideo(v) });
@@ -2871,7 +2871,104 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
   // la police de marque change la hauteur des titres : on recalcule les sections épinglées une fois chargée
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => ScrollTrigger.refresh());
 
-  Promise.all([chargerCatalogue(), chargerCompte()]).finally(() => {
+  /* ================= Accueil réglé depuis le dashboard AKARBI (/admin/accueil) =================
+     Vidéos, textes, positions et moments d'apparition. Sans réponse rapide, la page garde la mise en scène écrite ci-dessus.
+     Les temps sont en secondes de vidéo. */
+  async function fetchHome() {
+    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 1800);
+    try {
+      const r = await fetch('/api/accueil', { signal: ctl.signal });
+      const j = r.ok ? await r.json() : null;
+      return j && typeof j === 'object' ? j : null;
+    } catch (e) { return null; } finally { clearTimeout(to); }
+  }
+  const KINDS = { eyebrow: ['p', 'eyebrow'], h2: ['h2', 'h2'], h3: ['h3', 'h3'], 'lead-xl': ['p', 'lead lead--xl'], lead: ['p', 'lead'], body: ['p', 'body'],
+    num: ['p', 'step__num'], 'step-title': ['h3', 'step__title'], 'step-txt': ['p', 'step__txt'], display: ['h2', 'display'], motto: ['p', 'hero-motto'], link: ['a', 'link'] };
+  const POS = ['tl', 't', 'tr', 'l', 'c', 'r', 'bl', 'b', 'br'];
+  const num = (x, d) => (Number.isFinite(+x) && x !== null && x !== '' ? +x : d);
+  function partEl(p) {
+    const k = KINDS[p.k] || KINDS.body, el = document.createElement(k[0]);
+    el.className = k[1]; el.setAttribute('data-part', ''); el.textContent = String(p.t || '');
+    if (p.k === 'link') {
+      const h = String(p.href || '');
+      el.href = /^(#|\/|https:\/\/)/.test(h) ? h : '#';
+      if (h.startsWith('#h-')) el.setAttribute('data-anchor', '');
+      else if (h.startsWith('https://')) { el.target = '_blank'; el.rel = 'noopener'; }
+      const s = document.createElement('span'); s.textContent = h.startsWith('#h-') ? '↓' : '→'; el.append(' ', s);
+    }
+    return el;
+  }
+  const setParts = (box, parts) => { if (box && Array.isArray(parts)) box.replaceChildren(...parts.map(partEl)); };
+  function setMedia(sec, s) {
+    const v = $('video', sec);
+    if (s.video) v.dataset.src = s.video;
+    if (s.poster) v.poster = s.poster;
+    if (num(s.dur, 0) > 0.5) sec.dataset.dur = num(s.dur, 0);
+    if (num(s.len, 0) >= 100) sec.dataset.len = num(s.len, 0);
+  }
+  // remplace les textes d'une section ; at / out en secondes, convertis dans l'unité de la timeline de la section
+  function setOverlays(sec, list, attr, conv, before) {
+    if (!Array.isArray(list)) return;
+    const stage = $('.scrub__stage', sec);
+    $$(`.ov[${attr}]`, sec).forEach((e) => e.remove());
+    list.forEach((o) => {
+      const d = document.createElement('div');
+      d.className = `ov ov--${POS.includes(o.pos) ? o.pos : 'c'}${o.style === 'step' ? ' step' : o.style === 'step-end' ? ' step step--end' : ''}`;
+      d.setAttribute(attr, conv(num(o.at, 0), o.out === null || o.out === undefined || o.out === '' ? null : num(o.out, null)));
+      setParts(d, o.parts || []);
+      stage.insertBefore(d, before ? $(before, sec) : null);
+    });
+  }
+  function applyHome(c) {
+    const page = $('.page[data-page="home"]');
+    const S = (id) => $('#' + id, page);
+    const f3 = (x) => (Math.round(x * 1000) / 1000).toString();
+    if (c.tannerie) {
+      const sec = S('h-tannerie'), s = c.tannerie;
+      setMedia(sec, s); setParts($('[data-hero-after]', sec), s.after);
+      if (s.cue) sec.dataset.cue = s.cue;
+    }
+    for (const id of ['veste', 'atelier']) {
+      const s = c[id]; if (!s) continue;
+      const sec = S('h-' + id);
+      setMedia(sec, s);
+      if (Array.isArray(s.inset) && s.inset.length === 2) sec.dataset.inset = s.inset.map((x) => num(x, 0)).join(','); else if (s.inset === null) delete sec.dataset.inset;
+      setOverlays(sec, s.ov, 'data-t', (a, b) => `${f3(a)},${b === null ? 99 : f3(b)}`, '[data-rail]');
+      const rail = $('[data-rail]', sec);
+      if (rail && Array.isArray(s.rail)) {
+        rail.replaceChildren(...s.rail.map((r) => { const li = document.createElement('li'); li.dataset.at = num(r.at, 0); li.textContent = String(r.t || ''); return li; }));
+        rail.hidden = !s.rail.length;
+      }
+    }
+    if (c.pa) {
+      const sec = S('h-pa'), s = c.pa; setMedia(sec, s);
+      const dur = parseFloat(sec.dataset.dur) || 4.04;
+      // la vidéo joue entre 22 % et 70 % de la scène ; le titre ACHIRA vient après
+      const fr = (t) => Math.min(0.71, 0.22 + Math.max(0, t) / dur * 0.48);
+      setOverlays(sec, s.ov, 'data-pa-t', (a, b) => `${f3(fr(a))},${f3(b === null ? 0.7 : Math.max(fr(b), fr(a) + 0.04))}`, '[data-pa-title]');
+      if (s.head) $('[data-pa-head] h2', sec).textContent = s.head;
+      setParts($('[data-pa-title]', sec), s.title);
+    }
+    if (c.coffre) {
+      const sec = S('h-coffre'), s = c.coffre; setMedia(sec, s);
+      const dur = parseFloat(sec.dataset.dur) || 7.04;
+      // la vidéo joue sur les 60 premiers % ; après, la lettre (jusqu'à 90 %, avant la déchirure)
+      const fr = (t) => Math.min(0.9, Math.max(0, t) / dur * 0.6);
+      setOverlays(sec, s.ov, 'data-cf-t', (a, b) => `${f3(Math.max(0.01, fr(a)))},${f3(b === null ? 0.9 : Math.max(fr(b), fr(a) + 0.05))}`, '[data-cf-note]');
+      const note = $('[data-cf-note]', sec);
+      if (Array.isArray(s.letter)) {
+        note.replaceChildren(...s.letter.map((t) => { const p = document.createElement('p'); p.textContent = String(t); return p; }));
+        if (s.sign) { const p = document.createElement('p'); p.className = 'cf-note__sign'; p.textContent = s.sign; note.appendChild(p); }
+      }
+      if (s.finTitle) $('[data-fin-title]', sec).textContent = s.finTitle;
+      if (s.finSub) $('[data-fin-sub]', sec).textContent = s.finSub;
+    }
+  }
+
+  // l'accueil attend sa mise en scène (1,8 s au plus) avant de se construire
+  Promise.all([chargerCatalogue(), chargerCompte(), fetchHome().then((c) => {
+    if (c) { try { applyHome(c); } catch (e) { console.warn('Accueil AKARBI : réglages ignorés', e); } }
+  })]).finally(() => {
     cart.charger();
     renderCards();
     renderCart();
