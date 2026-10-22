@@ -526,6 +526,77 @@ html.rm .fin { position: relative; }
 html.rm .fin__edge { display: none; }
 html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh; }
 
+/* ---------- Portant : les vestes suspendues à une barre métal ---------- */
+.rack { position: relative; overflow: hidden; padding: clamp(70px, 11vh, 120px) 0 clamp(60px, 9vh, 100px); background: radial-gradient(70% 55% at 50% 26%, #1b3a30 0%, var(--p900) 55%, var(--p950) 100%); }
+.rack::after { content: ''; position: absolute; left: 50%; bottom: 7%; width: min(70vw, 760px); height: 60px; transform: translateX(-50%); background: radial-gradient(closest-side, rgba(0, 0, 0, .55), transparent); pointer-events: none; }
+.rack__head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 10px 24px; padding: 0 var(--gut); margin-bottom: clamp(26px, 5vh, 48px); }
+.rack__hint { font: 600 10px/1.4 var(--sans); letter-spacing: .24em; text-transform: uppercase; color: var(--iv60); }
+.rack__stage { position: relative; --slot: clamp(104px, 15vw, 210px); --bar: 34px; }
+/* La barre ne défile pas : ce sont les cintres qui glissent dessus */
+.rack__bar { position: absolute; z-index: 0; left: 0; right: 0; top: var(--bar); height: 11px; border-radius: 6px; background: linear-gradient(180deg, #fbfaf6 0%, #c9c7c0 30%, #77756f 58%, #4a4945 72%, #b7b5ae 100%); box-shadow: 0 10px 18px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .7); pointer-events: none; }
+.rack__bar::before, .rack__bar::after { content: ''; position: absolute; top: -26px; width: 14px; height: 60px; border-radius: 3px; background: linear-gradient(90deg, #4a4945, #c9c7c0 45%, #6b6964); }
+.rack__bar::before { left: 3vw; } .rack__bar::after { right: 3vw; }
+.rack__view { position: relative; display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; cursor: grab; outline-offset: -6px; }
+.rack__view::-webkit-scrollbar { display: none; }
+.rack__view.is-drag { scroll-snap-type: none; cursor: grabbing; }
+.rack__track { display: flex; align-items: flex-start; padding: 0 calc(50% - var(--slot) / 2); }
+.rack__view { z-index: 1; }
+.hang { position: relative; flex: none; width: var(--slot); height: calc(var(--slot) * 2.15 + var(--bar)); scroll-snap-align: center; transform-origin: 50% var(--bar); will-change: transform; -webkit-tap-highlight-color: transparent; }
+/* le haut du crochet passe sur la barre ; le corps du cintre disparaît sous le col de la veste */
+.hang__hook { position: absolute; z-index: 1; left: 50%; top: calc(var(--bar) - 2px - var(--slot) * .05); width: calc(var(--slot) * 1.3); transform: translateX(-50%); filter: drop-shadow(0 4px 4px rgba(0, 0, 0, .4)); }
+.hang__hook svg { width: 100%; height: auto; }
+.hang__body { position: absolute; z-index: 2; left: 50%; top: calc(var(--bar) + var(--slot) * .3); width: calc(var(--slot) * 2); margin-left: calc(var(--slot) * -1); pointer-events: none; }
+.hang__body img { width: 100%; filter: drop-shadow(0 26px 30px rgba(0, 0, 0, .55)); }
+/* Cintre + veste pivotent ensemble autour du crochet : de face au centre, de profil sur les côtés */
+.hang { perspective: 1000px; }
+.hang__jacket { position: absolute; inset: 0; transform-origin: 50% var(--bar); will-change: transform, filter; }
+.hang--empty .hang__hook { opacity: .55; }
+.hang__soon { position: absolute; left: 50%; top: calc(var(--bar) + var(--slot) * .55); transform: translateX(-50%); white-space: nowrap; font: 600 9px/1.4 var(--sans); letter-spacing: .24em; text-transform: uppercase; color: var(--iv30); }
+.rack__info { display: grid; justify-items: center; gap: 12px; min-height: 140px; padding: 0 var(--gut); text-align: center; }
+.rack__info .h3 { color: var(--ivory); }
+.rack__meta { font: italic 400 clamp(18px, 1.6vw, 24px)/1.2 var(--serif); color: var(--iv80); }
+.rack__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 6px; }
+.rack__nav { position: absolute; z-index: 5; top: calc(var(--bar) + var(--slot) * .9); width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: rgba(238, 229, 211, .1); color: var(--ivory); backdrop-filter: blur(6px); transition: background .3s; }
+.rack__nav:hover { background: rgba(238, 229, 211, .22); }
+.rack__nav--prev { left: var(--gut); } .rack__nav--next { right: var(--gut); }
+
+/* Vue seule : la veste tourne sur elle-même */
+.viewer { position: fixed; inset: 0; z-index: 118; display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 400px); background: radial-gradient(60% 60% at 40% 45%, #1d3d33, var(--p950) 75%); color: var(--ivory); opacity: 0; visibility: hidden; transition: opacity .45s var(--ease), visibility 0s .45s; }
+.viewer.open { opacity: 1; visibility: visible; transition: opacity .45s var(--ease); }
+.viewer__close { position: absolute; top: calc(18px + env(safe-area-inset-top, 0px)); right: 18px; z-index: 3; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: rgba(238, 229, 211, .12); font-size: 22px; }
+.viewer__stage { position: relative; display: grid; place-items: center; perspective: 1400px; touch-action: pan-y; cursor: grab; user-select: none; }
+.viewer__stage.is-drag { cursor: grabbing; }
+.viewer__spin { position: relative; width: min(62vh, 44vw); aspect-ratio: 960 / 850; transform-style: preserve-3d; will-change: transform; }
+.viewer__spin img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; backface-visibility: hidden; -webkit-backface-visibility: hidden; filter: drop-shadow(0 40px 40px rgba(0, 0, 0, .5)); pointer-events: none; }
+.viewer__spin img + img { transform: rotateY(180deg); }
+.viewer__floor { position: absolute; bottom: 12%; left: 50%; width: min(44vh, 32vw); height: 40px; transform: translateX(-50%); background: radial-gradient(closest-side, rgba(0, 0, 0, .6), transparent); }
+.viewer__hint { position: absolute; bottom: 5%; left: 0; right: 0; text-align: center; font: 600 10px/1 var(--sans); letter-spacing: .24em; text-transform: uppercase; color: var(--iv30); }
+.viewer__pins { position: absolute; inset: 0; pointer-events: none; }
+.viewer__pin { position: absolute; display: flex; align-items: center; gap: 8px; max-width: 200px; font: 500 12px/1.35 var(--sans); color: var(--iv80); opacity: 0; transform: translateY(8px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
+.viewer.open .viewer__pin { opacity: 1; transform: none; }
+.viewer__pin b { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--champ); color: var(--champ); font: 400 12px/1 var(--brand); }
+.viewer__panel { display: grid; align-content: safe center; gap: 22px; padding: 90px clamp(24px, 3vw, 44px) 40px; background: rgba(5, 15, 12, .55); border-left: 1px solid var(--iv14); overflow-y: auto; }
+.viewer__price { font: 400 30px/1 var(--brand); letter-spacing: .06em; color: var(--champ); }
+.viewer__details { display: grid; gap: 10px; }
+.viewer__details li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; font-size: 14px; line-height: 1.45; color: var(--iv80); }
+.viewer__details li b { font: 400 14px/1.45 var(--brand); color: var(--champ); }
+.viewer .sizes { display: flex; gap: 8px; }
+.viewer .size { min-width: 46px; height: 42px; border-radius: 999px; border: 1px solid var(--iv30); background: none; color: var(--ivory); font: 600 12px/1 var(--sans); }
+.viewer .size:hover { border-color: var(--ivory); }
+.viewer .opt__label { color: var(--iv60); }
+.viewer .size[aria-checked="true"] { background: var(--ivory); color: var(--ink); border-color: var(--ivory); }
+.fly { position: fixed; z-index: 140; pointer-events: none; }
+@media (min-width: 901px) { .viewer__details { display: none; } }
+@media (max-width: 900px) {
+  .viewer { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
+  .viewer__spin { width: min(78vw, 46vh); }
+  .viewer__panel { align-content: start; padding: 22px var(--gut) calc(26px + env(safe-area-inset-bottom, 0px)); gap: 16px; border-left: 0; border-top: 1px solid var(--iv14); max-height: 52vh; }
+  .viewer__pins { display: none; }
+  .viewer__details { grid-template-columns: 1fr 1fr; }
+  .rack__nav { display: none; }
+}
+html.rm .hang, html.rm .hang__jacket { transition: none; }
+
 </style>
 <a class="skip" href="#contenu">Aller au contenu</a>
 
@@ -771,12 +842,20 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     <h1 class="display" style="color:var(--ink)" data-split>Première trace</h1>
     <p class="lead" data-reveal style="max-width:30ch">Le premier chapitre raconte la naissance d’AKARBI : une rencontre, des parcours qui se croisent et une ambition qui prend forme.</p>
   </section>
-  <section class="light paper-grain h-coll" data-tone="light" style="padding:0 var(--gut) clamp(90px,14vh,160px)">
-    <div class="tabs" role="tablist" aria-label="Collection" data-tabs>
-      <button type="button" role="tab" aria-selected="true" data-tab="homme">Homme</button>
-      <button type="button" role="tab" aria-selected="false" data-tab="femme">Femme</button>
+  <section class="rack" data-tone="dark" aria-labelledby="rack-title">
+    <div class="rack__head">
+      <div><p class="eyebrow">Chapter 01 — Le portant</p><h2 class="h3" id="rack-title" style="margin-top:10px">La collection</h2></div>
+      <p class="rack__hint">Fais glisser le portant · touche une veste pour la voir seule</p>
     </div>
-    <div class="coll-grid" data-products role="tabpanel" aria-label="Pièces de la collection"></div>
+    <div class="rack__stage">
+      <div class="rack__bar" aria-hidden="true"></div>
+      <div class="rack__view" data-rack tabindex="0" role="group" aria-roledescription="portant" aria-label="Vestes de la collection. Flèches gauche et droite pour parcourir, Entrée pour voir la veste.">
+        <div class="rack__track" data-rack-track></div>
+      </div>
+      <button type="button" class="rack__nav rack__nav--prev" data-rack-step="-1" aria-label="Veste précédente">←</button>
+      <button type="button" class="rack__nav rack__nav--next" data-rack-step="1" aria-label="Veste suivante">→</button>
+    </div>
+    <div class="rack__info" data-rack-info aria-live="polite"></div>
   </section>
   <section class="pad" data-tone="dark" style="background:var(--p900)">
     <div style="display:grid;gap:18px;margin-bottom:clamp(40px,7vh,80px)">
@@ -1043,6 +1122,17 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
   </div>
 </footer>
 
+<div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-labelledby="viewer-title" aria-hidden="true">
+  <button type="button" class="viewer__close" data-viewer-close aria-label="Fermer">×</button>
+  <div class="viewer__stage" data-viewer-stage>
+    <div class="viewer__floor" aria-hidden="true"></div>
+    <div class="viewer__spin" data-viewer-spin></div>
+    <div class="viewer__pins" data-viewer-pins aria-hidden="true"></div>
+    <p class="viewer__hint" aria-hidden="true">Fais-la tourner du doigt</p>
+  </div>
+  <div class="viewer__panel" data-viewer-panel></div>
+</div>
+
 <aside class="cart" id="cart" aria-hidden="true">
   <div class="cart__bg" data-cart-close></div>
   <div class="cart__panel" role="dialog" aria-modal="true" aria-labelledby="cart-title">
@@ -1080,6 +1170,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     petrole: {
       id: 'petrole', name: 'Veste Signature', color: 'Pétrole', price: 320, swatch: '#12281f',
       face: 'img/p-petrole-face.webp', back: 'img/p-petrole-dos.webp',
+      cut: ['img/p-petrole-face-cut.webp', 'img/p-petrole-dos-cut.webp'],
       alt: 'Veste Signature vert pétrole',
       alts: ['Veste Signature vert pétrole, vue de face', 'Veste Signature vert pétrole, vue de dos avec la signature « 111 »', 'La veste vert pétrole suspendue dans la fumée', 'Détail de l’épaule et de l’empiècement bordeaux', 'Détail du monogramme AK en métal, côté cœur', 'Un homme de dos portant la veste vert pétrole'],
       gallery: ['img/p-petrole-face.webp', 'img/p-petrole-dos.webp', 'img/d-flottante.webp', 'img/d-epaule.webp', 'img/d-logo.webp', 'img/portrait-homme.webp'],
@@ -1088,6 +1179,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     ivoire: {
       id: 'ivoire', name: 'Veste Signature', color: 'Ivoire & Bordeaux', price: 320, swatch: 'linear-gradient(180deg,#eee5d3 50%,#5a1020 50%)',
       face: 'img/p-ivoire-face.webp', back: 'img/p-ivoire-dos.webp',
+      cut: ['img/p-ivoire-face-cut.webp', 'img/p-ivoire-dos-cut.webp'],
       alt: 'Veste Signature ivoire et bordeaux',
       alts: ['Veste Signature ivoire et bordeaux, vue de face', 'Veste Signature ivoire et bordeaux, vue de dos', 'Une femme portant la veste ivoire et bordeaux'],
       gallery: ['img/p-ivoire-face.webp', 'img/p-ivoire-dos.webp', 'img/portrait-femme.webp'],
@@ -1253,6 +1345,222 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     const t = $('[data-toast]'); t.textContent = msg; t.classList.add('show');
     clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2600);
   }
+
+  /* ================= Portant ================= */
+  // Les vestes pendent à une barre métal : celle du centre s'ouvre de face, les autres restent
+  // de profil, serrées comme sur un vrai portant. Les cintres vides annoncent le Chapter 02.
+  const RACK = ['soon', 'petrole', 'ivoire', 'soon'];
+  const HANGER_SVG = `<svg viewBox="0 0 260 90"><defs><linearGradient id="hgm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6f4ee"/><stop offset=".55" stop-color="#8b8983"/><stop offset="1" stop-color="#d9d7d0"/></linearGradient></defs><path d="M130 40 C130 30 121 28 121 17 C121 6 141 4 142 16" fill="none" stroke="url(#hgm)" stroke-width="5" stroke-linecap="round"/><path d="M130 40 L14 80 Q4 85 14 87 L246 87 Q256 85 246 80 Z" fill="none" stroke="url(#hgm)" stroke-width="6" stroke-linejoin="round"/></svg>`;
+
+  const rack = (() => {
+    const view = $('[data-rack]'), track = $('[data-rack-track]'), info = $('[data-rack-info]');
+    if (!view) return { show() {}, hide() {} };
+    track.innerHTML = RACK.map((id, i) => {
+      const p = PRODUCTS[id];
+      if (!p) return `<div class="hang hang--empty" aria-hidden="true"><span class="hang__jacket"><span class="hang__hook">${HANGER_SVG}</span></span><span class="hang__soon">Chapter 02</span></div>`;
+      return `<button type="button" class="hang" data-i="${i}" data-hang="${id}" tabindex="-1" aria-label="${p.name} ${p.color}, ${euro(p.price)}">
+        <span class="hang__jacket"><span class="hang__hook">${HANGER_SVG}</span><span class="hang__body"><img src="${p.cut[0]}" alt="" draggable="false"></span></span>
+      </button>`;
+    }).join('');
+    const items = $$('.hang', track);
+    const jackets = items.map((el) => el.querySelector('.hang__jacket'));
+    let running = false, raf = 0, current = -1, lastX = 0, swing = 0, swingV = 0;
+
+    const centerOf = (i) => items[i].offsetLeft + items[i].offsetWidth / 2 - view.clientWidth / 2;
+    function goTo(i, smooth = true) {
+      i = Math.max(0, Math.min(items.length - 1, i));
+      view.scrollTo({ left: centerOf(i), behavior: smooth && !RM ? 'smooth' : 'auto' });
+    }
+
+    function frame() {
+      const slot = items[0].offsetWidth;
+      const mid = view.scrollLeft + view.clientWidth / 2;
+      // les cintres se balancent selon la vitesse du défilement, puis se calment
+      const v = view.scrollLeft - lastX; lastX = view.scrollLeft;
+      if (!RM) {
+        swingV = (swingV + (Math.max(-10, Math.min(10, -v * 0.45)) - swing) * 0.1) * 0.86;
+        swing += swingV;
+      }
+      let best = 0, bestD = Infinity;
+      items.forEach((el, i) => {
+        const d = (el.offsetLeft + slot / 2 - mid) / slot; // distance au centre, en cintres
+        const t = Math.min(Math.abs(d), 1);
+        if (Math.abs(d) < bestD) { bestD = Math.abs(d); best = i; }
+        el.style.zIndex = 100 - Math.round(Math.abs(d) * 10);
+        el.style.transform = swing ? `rotate(${(swing * (1 - t * 0.35)).toFixed(2)}deg)` : '';
+        const j = jackets[i];
+        if (j) {
+          // repliée = vue de profil : la veste tourne sur son cintre et s'assombrit
+          j.style.transform = `rotateY(${(Math.sign(d) * t * 74).toFixed(1)}deg) scale(${(1.06 - t * 0.2).toFixed(3)})`;
+          j.style.filter = `brightness(${(1 - t * 0.4).toFixed(2)})`;
+        }
+      });
+      if (best !== current) { current = best; renderInfo(); }
+      if (running) raf = requestAnimationFrame(frame);
+    }
+
+    function renderInfo() {
+      const p = PRODUCTS[RACK[current]];
+      info.innerHTML = p
+        ? `<h3 class="h3">${p.name}</h3><p class="rack__meta">${p.color} · ${euro(p.price)}</p>
+           <div class="rack__actions"><button type="button" class="btn btn--solid" data-view="${p.id}">Voir la veste</button><a class="btn btn--line" href="#/produit/${p.id}">Fiche complète</a></div>`
+        : `<p class="eyebrow">Chapter 02</p><p class="rack__meta">De nouvelles pièces prendront bientôt place sur le portant.</p>`;
+    }
+
+    // Glisser à la souris (au doigt, le défilement natif suffit)
+    let drag = null, moved = false;
+    view.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      drag = { x: e.clientX, left: view.scrollLeft }; moved = false;
+    });
+    window.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      const dx = e.clientX - drag.x;
+      if (!moved && Math.abs(dx) > 5) { moved = true; view.classList.add('is-drag'); }
+      if (moved) view.scrollLeft = drag.left - dx;
+    });
+    window.addEventListener('pointerup', () => {
+      if (!drag) return;
+      drag = null;
+      if (moved) { view.classList.remove('is-drag'); goTo(current); }
+    });
+
+    // La molette fait défiler le portant, puis rend la main à la page aux extrémités
+    view.addEventListener('wheel', (e) => {
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+      const max = view.scrollWidth - view.clientWidth;
+      if ((e.deltaY > 0 && view.scrollLeft >= max - 2) || (e.deltaY < 0 && view.scrollLeft <= 2)) return;
+      e.preventDefault();
+      view.scrollLeft += e.deltaY;
+    }, { passive: false });
+
+    view.addEventListener('click', (e) => {
+      if (moved) { moved = false; return; }
+      const h = e.target.closest('[data-hang]');
+      if (!h) return;
+      if (+h.dataset.i !== current) goTo(+h.dataset.i);
+      else viewer.open(h.dataset.hang, h);
+    });
+    view.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); goTo(current + (e.key === 'ArrowRight' ? 1 : -1)); }
+      else if ((e.key === 'Enter' || e.key === ' ') && PRODUCTS[RACK[current]]) { e.preventDefault(); viewer.open(RACK[current], view); }
+    });
+    document.addEventListener('click', (e) => {
+      const s = e.target.closest('[data-rack-step]');
+      if (s) goTo(current + +s.dataset.rackStep);
+      const v = e.target.closest('[data-view]');
+      if (v) viewer.open(v.dataset.view, v);
+    });
+
+    return {
+      show() {
+        if (running) return;
+        running = true;
+        requestAnimationFrame(() => { goTo(RACK.indexOf('petrole'), false); lastX = view.scrollLeft; frame(); });
+      },
+      hide() { running = false; cancelAnimationFrame(raf); },
+    };
+  })();
+
+  /* ================= Vue seule : la veste tourne ================= */
+  const viewer = (() => {
+    const el = $('#viewer'), spin = $('[data-viewer-spin]'), stage = $('[data-viewer-stage]');
+    const panel = $('[data-viewer-panel]'), pins = $('[data-viewer-pins]');
+    const PIN_AT = ['left:7%;top:18%', 'left:5%;top:62%', 'right:7%;top:24%', 'right:5%;top:66%'];
+    let angle = 0, vel = 0, raf = 0, drag = null, opener = null, open = false;
+
+    // S'attarde de face et de dos, passe vite par la tranche
+    const shown = (a) => a - 20 * Math.sin((2 * a * Math.PI) / 180);
+    function tick() {
+      if (!drag) { vel += ((RM ? 0 : 0.42) - vel) * 0.03; angle += vel; }
+      spin.style.transform = `rotateY(${shown(angle).toFixed(2)}deg)`;
+      raf = requestAnimationFrame(tick);
+    }
+
+    stage.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, a: angle }; stage.classList.add('is-drag'); stage.setPointerCapture(e.pointerId); });
+    stage.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      const a = drag.a + (e.clientX - drag.x) * 0.55;
+      vel = a - angle; angle = a;
+    });
+    const release = () => { drag = null; stage.classList.remove('is-drag'); };
+    stage.addEventListener('pointerup', release);
+    stage.addEventListener('pointercancel', release);
+
+    function fill(id) {
+      const p = PRODUCTS[id];
+      spin.innerHTML = `<img src="${p.cut[0]}" alt="${p.alt}, vue de face"><img src="${p.cut[1]}" alt="${p.alt}, vue de dos">`;
+      const key = [p.details[0], p.details[1], p.details[4], p.details[5]].filter(Boolean);
+      pins.innerHTML = key.map((d, i) => `<p class="viewer__pin" style="${PIN_AT[i]};transition-delay:${0.3 + i * 0.12}s"><b>${i + 1}</b><span>${d}</span></p>`).join('');
+      panel.innerHTML = `
+        <p class="eyebrow">Chapter 01 — Première trace</p>
+        <div><h2 class="h3" id="viewer-title">${p.name}</h2><p class="rack__meta" style="margin-top:8px">${p.color}</p></div>
+        <p class="viewer__price">${euro(p.price)}</p>
+        <ul class="viewer__details">${key.map((d, i) => `<li><b>${i + 1}</b><span>${d}</span></li>`).join('')}</ul>
+        <div class="opt"><span class="opt__label" id="v-size">Taille</span><div class="sizes" role="radiogroup" aria-labelledby="v-size">${['S', 'M', 'L', 'XL'].map((s) => `<button type="button" class="size" role="radio" aria-checked="false" data-size="${s}">${s}</button>`).join('')}</div></div>
+        <button type="button" class="btn btn--solid" data-collect="${p.id}">Ajouter à ma collection</button>
+        <a class="link" href="#/produit/${p.id}" style="justify-self:start">Fiche complète <span>→</span></a>
+        <p class="note" style="color:var(--iv60)">Tailles et disponibilités définitives à l’ouverture de la boutique.</p>`;
+    }
+
+    function openViewer(id, from) {
+      if (!PRODUCTS[id]) return;
+      fill(id);
+      opener = from || document.activeElement;
+      angle = -25; vel = 0; open = true;
+      el.classList.add('open'); el.setAttribute('aria-hidden', 'false');
+      document.documentElement.style.overflow = 'hidden';
+      cancelAnimationFrame(raf); tick();
+      setTimeout(() => $('[data-viewer-close]').focus(), 60);
+    }
+    function close() {
+      if (!open) return;
+      open = false;
+      el.classList.remove('open'); el.setAttribute('aria-hidden', 'true');
+      document.documentElement.style.overflow = '';
+      setTimeout(() => { if (!open) cancelAnimationFrame(raf); }, 450);
+      if (opener && document.contains(opener)) opener.focus({ preventScroll: true });
+      opener = null;
+    }
+
+    // La veste file dans le panier, qui garde la collection sur cet appareil
+    function flyToCart(img) {
+      if (RM || !img) return;
+      const from = img.getBoundingClientRect();
+      const cartBtn = $('.nav__cart');
+      const to = cartBtn && cartBtn.getBoundingClientRect();
+      const tx = to && to.width ? to.left + to.width / 2 : innerWidth - 40;
+      const ty = to && to.width ? to.top + to.height / 2 : 30;
+      const fly = img.cloneNode();
+      fly.className = 'fly'; fly.alt = '';
+      Object.assign(fly.style, { left: from.left + 'px', top: from.top + 'px', width: from.width + 'px', height: from.height + 'px', objectFit: 'contain' });
+      document.body.appendChild(fly);
+      gsap.to(fly, { x: tx - from.left - from.width / 2, y: ty - from.top - from.height / 2, scale: 0.08, opacity: 0.4, duration: 0.85, ease: 'power3.in', onComplete: () => fly.remove() });
+    }
+
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('[data-viewer-close]')) { close(); return; }
+      const c = e.target.closest('[data-collect]');
+      if (!c) return;
+      const sel = $('.size[aria-checked="true"]', panel);
+      if (!sel) { toast('Choisis ta taille pour continuer.'); $('.size', panel).focus(); return; }
+      const p = PRODUCTS[c.dataset.collect];
+      cart.add(p.id, sel.dataset.size);
+      flyToCart($('img', spin));
+      toast(`${p.name} ${p.color} rejoint ta collection.`);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (!open) return;
+      if (e.key === 'Escape') { close(); return; }
+      if (e.key !== 'Tab') return;
+      const scope = focusables(el);
+      const i = scope.indexOf(document.activeElement);
+      if (e.shiftKey && i <= 0) { e.preventDefault(); scope[scope.length - 1].focus(); }
+      else if (!e.shiftKey && (i === -1 || i === scope.length - 1)) { e.preventDefault(); scope[0].focus(); }
+    });
+
+    return { open: openViewer, close };
+  })();
 
   /* ================= Menu mobile ================= */
   const mm = $('#mmenu');
@@ -1841,6 +2149,8 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     if (name === 'produit' && !PRODUCTS[parts[1]]) { location.replace('#/produits'); return; }
     $$('.nav__links a').forEach((a) => { if (a.dataset.route === name || (name === 'produit' && a.dataset.route === 'produits')) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     if (name === 'produit') renderProduct(parts[1]);
+    viewer.close();
+    if (name === 'produits') rack.show(); else rack.hide();
     window.scrollTo(0, 0);
     nav.classList.remove('is-min');
     const page = $(`.page[data-page="${name}"]`);
