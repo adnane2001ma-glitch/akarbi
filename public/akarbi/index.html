@@ -2277,17 +2277,19 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
   // 60 sauts d'image par seconde (chaque saut oblige à redécoder depuis l'image clé précédente).
   // À l'arrêt ou en reculant, on se cale exactement sur l'image voulue, sans empiler les sauts.
   const scrubs = [];
+  // les dernières images des vidéos sont de mauvaise qualité : on s'arrête un peu avant la fin
+  const END_GUARD = 0.22;
   gsap.ticker.add((time, dtMs) => {
     const dt = Math.max(dtMs, 1) / 1000;
     for (const s of scrubs) {
       const v = s.video;
       if (!v._ready) continue;
-      const t = Math.min(s.state.t, s.dur - 0.04);
+      const t = Math.min(s.state.t, s.dur - END_GUARD);
       const speed = s.lastT === undefined ? 0 : (t - s.lastT) / dt;
       s.lastT = t;
       s.rate = (s.rate || 0) * 0.75 + speed * 0.25; // vitesse lissée, en secondes de vidéo par seconde
       const ahead = t - v.currentTime;
-      if (!RM && s.rate > 0.3 && t < s.dur - 0.15 && ahead > -0.15 && ahead < 0.5) {
+      if (!RM && s.rate > 0.3 && t < s.dur - END_GUARD - 0.1 && ahead > -0.15 && ahead < 0.5) {
         v.playbackRate = Math.min(4, Math.max(0.3, s.rate + ahead * 2)); // rattrape doucement l'écart
         if (v.paused) v.play().catch(() => {});
         continue;
@@ -2297,6 +2299,111 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
       if (Math.abs(v.currentTime - t) > 1 / 40) v.currentTime = t;
     }
   });
+
+  /* ================= Accueil : défilement texte par texte =================
+     Chaque geste (molette, glissé, flèches) fait jouer la vidéo jusqu'au texte suivant, puis la page attend
+     le geste suivant. Chaque section épinglée déclare les moments (temps de sa timeline) où un texte est lisible. */
+  let SL = null;                                   // sections de l'accueil : { st, times } ; null hors de l'accueil
+  const fullAt = (at, f, parts) => at + f * (1 + 0.3 * (parts.length - 1)) + 0.012;
+  function slideStops() {
+    const out = [];
+    for (const s of SL) {
+      const len = s.st.end - s.st.start, d = s.tl.duration();
+      const ys = s.times.map((t) => Math.round(s.st.start + len * Math.min(1, t / d))).sort((a, b) => a - b);
+      // pas d'arrêt sur une image sans texte : on va droit au premier groupe de textes
+      out.push({ start: Math.round(s.st.start), end: Math.round(s.st.end), ys });
+    }
+    return out.sort((a, b) => a.start - b.start);
+  }
+  // prochain arrêt depuis y dans la direction dir ; null = défilement normal (sections de contenu)
+  function slideTarget(y, dir) {
+    const secs = slideStops(), H = window.innerHeight, near = H * 1.15;
+    if (dir > 0) {
+      const z = secs.find((s) => y >= s.start - 3 && y < s.end - 3);
+      if (z) {
+        const n = z.ys.find((v) => v > y + 3);
+        if (n !== undefined) return n;
+        const next = secs.find((s) => s.start > z.end - 3 && s.start - z.end <= near);   // section épinglée juste après : on enchaîne
+        return next ? next.ys[0] : z.end;
+      }
+      const next = secs.find((s) => s.start > y + 3 && s.start - y <= near);
+      return next ? next.ys[0] : null;
+    }
+    const z = secs.find((s) => y > s.start + 3 && y <= s.end + 3);
+    if (z) {
+      const p = [...z.ys].reverse().find((v) => v < y - 3);
+      if (p !== undefined && p > z.start + 3) return p;
+      const prev = [...secs].reverse().find((s) => s.end < z.start + 3 && z.start - s.end <= near);
+      return prev ? prev.ys[prev.ys.length - 1] : z.start;
+    }
+    const prev = [...secs].reverse().find((s) => s.end < y - 3 && y - s.end <= near);
+    return prev ? prev.ys[prev.ys.length - 1] : null;
+  }
+  let sliding = false, slideEnd = 0, lastDir = 1;
+  function slideTo(y) {
+    sliding = true;
+    const dist = Math.abs(y - window.scrollY);
+    // durée proportionnelle à la distance : la vidéo joue à un rythme proche du réel.
+    // Pas de plafond court : accélérer la vidéo la fait saccader (trop de sauts d'image à décoder)
+    const duration = Math.min(6, Math.max(0.8, dist / window.innerHeight * 0.6));
+    gsap.to(window, { scrollTo: { y, autoKill: false }, duration, ease: 'sine.inOut', overwrite: true,
+      onComplete: () => { sliding = false; slideEnd = performance.now(); } });
+  }
+  const slideOn = () => SL && !RM && !cartEl.classList.contains('open') && !mm.classList.contains('open');
+  function slideStep(dir, e) {
+    if (!slideOn()) return false;
+    if (sliding) { if (e) e.preventDefault(); return true; }
+    const t = slideTarget(window.scrollY, dir);
+    if (t === null) return false;
+    if (e) e.preventDefault();
+    lastDir = dir; slideTo(t);
+    return true;
+  }
+  let lastWheel = 0;
+  window.addEventListener('wheel', (e) => {
+    if (!slideOn() || e.ctrlKey || Math.abs(e.deltaY) < 2) return;
+    const now = performance.now(), gap = now - lastWheel; lastWheel = now;
+    // la fin d'un élan de pavé tactile ne doit pas déclencher le texte suivant
+    if (!sliding && now - slideEnd < 650 && gap < 180 && slideTarget(window.scrollY, Math.sign(e.deltaY)) !== null) { e.preventDefault(); return; }
+    slideStep(Math.sign(e.deltaY), e);
+  }, { passive: false });
+  let touchY = null, touchHeld = false;
+  window.addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; touchHeld = false; }, { passive: true });
+  window.addEventListener('touchmove', (e) => {
+    if (touchY === null || !slideOn()) return;
+    const dy = touchY - e.touches[0].clientY;
+    if (sliding || touchHeld) { e.preventDefault(); return; }
+    if (Math.abs(dy) < 8) return;
+    // dans une section vidéo, le doigt ne fait pas défiler : il déclenche le texte suivant au relâché
+    if (slideTarget(window.scrollY, Math.sign(dy)) !== null) { touchHeld = true; e.preventDefault(); }
+  }, { passive: false });
+  window.addEventListener('touchend', (e) => {
+    if (touchY === null) return;
+    const dy = touchY - e.changedTouches[0].clientY; touchY = null;
+    if (touchHeld && Math.abs(dy) > 24) slideStep(Math.sign(dy));
+    touchHeld = false;
+  }, { passive: true });
+  window.addEventListener('keydown', (e) => {
+    if (e.altKey || e.ctrlKey || e.metaKey || e.target.closest('input, textarea, select, [contenteditable]')) return;
+    const dir = { ArrowDown: 1, PageDown: 1, ' ': e.shiftKey ? -1 : 1, ArrowUp: -1, PageUp: -1 }[e.key];
+    if (dir) slideStep(dir, e);
+  });
+  // barre de défilement ou élan tactile arrêté au milieu d'une vidéo : on finit jusqu'au texte suivant
+  let idleT, lastY0 = window.scrollY;
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (y !== lastY0) { if (!sliding) lastDir = Math.sign(y - lastY0); lastY0 = y; }
+    clearTimeout(idleT);
+    if (sliding || !slideOn()) return;
+    idleT = setTimeout(() => {
+      if (sliding || !slideOn() || touchY !== null) return;
+      const y = window.scrollY, secs = slideStops();
+      const z = secs.find((s) => y > s.start + 3 && y < s.end - 3);
+      if (!z || z.ys.some((v) => Math.abs(v - y) <= 4)) return;
+      const t = slideTarget(y, lastDir);
+      if (t !== null) slideTo(t);
+    }, 220);
+  }, { passive: true });
 
   /* ================= Animations génériques ================= */
   function reveals(scope) {
@@ -2345,7 +2452,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
      Groupe = textes qui se chevauchent déjà dans le temps, ou deux textes qui se suivent de près
      et ne se gênent pas à l'écran (un à gauche + un à droite, ou deux textes centrés empilés).
      Fonctionne aussi avec les textes réglés depuis la dashboard ACHIRA. */
-  const POS_OF = (ov) => { const m = ov.className.match(/ov--(tl|tr|bl|br|l|r|c|t|b)/); return m ? m[1] : 'c'; };
+  const POS_OF = (ov) => { const m = ov.className.match(/\bov--(tl|tr|bl|br|l|r|c|t|b)\b/); return m ? m[1] : 'c'; };
   const sideOf = (p) => (/^(tl|l|bl)$/.test(p) ? -1 : /^(tr|r|br)$/.test(p) ? 1 : 0);
   const pairable = (x, y) => {
     const a = POS_OF(x), b = POS_OF(y);
@@ -2355,6 +2462,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
   // list : [{ ov, a, b }] en unités de timeline ; b = null si le texte reste jusqu'au bout
   function playTexts(tl, list, maxGap, f) {
     let g = null;
+    const times = [];
     const groups = [];
     for (const it of [...list].sort((x, y) => x.a - y.a)) {
       const last = g && g.items[g.items.length - 1];
@@ -2372,11 +2480,16 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
         if (POS_OF(first.ov) === 'c') { first.ov.classList.add('ov--above'); second.ov.classList.add('ov--below'); }
         else if (portrait()) first.ov.classList.add('ov--pair-top');
       }
+      let full = 0, out = Infinity;
       for (const it of gr.items) {
         const parts = overlayIn(tl, it.ov, it.a, f);
-        if (it.b !== null) overlayOut(tl, parts, it.b, f);
+        if (it.b !== null) { overlayOut(tl, parts, it.b, f); out = Math.min(out, it.b); }
+        full = Math.max(full, fullAt(it.a, f, parts));
       }
+      // arrêt : tout le groupe est lisible, avant que le premier texte ne commence à partir
+      times.push(out === Infinity ? full : Math.min(full, (full + out - f * 0.8) / 2));
     }
+    return times;
   }
 
   /* Section vidéo standard : veste, atelier */
@@ -2392,7 +2505,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
       const [a, b] = ov.dataset.t.split(',').map(Number);
       return { ov, a: Math.max(0.004, a / dur * span), b: b < 90 ? b / dur * span : null };
     });
-    playTexts(tl, texts, 0.6 / dur * span, f); // deux textes à moins de 0,6 s de vidéo d'écart vont ensemble
+    const times = playTexts(tl, texts, 0.6 / dur * span, f); // deux textes à moins de 0,6 s de vidéo d'écart vont ensemble
     tl.set({}, {}, 1);
     if (sec.dataset.inset) {
       // plans d'ensemble : l'image descend un peu pour laisser la place à la barre ; retour plein cadre sur les gros plans
@@ -2414,7 +2527,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
       apply();
     }
     const rail = $('[data-rail]', sec);
-    ScrollTrigger.create({
+    const st = ScrollTrigger.create({
       trigger: sec, start: 'top top', end: vh(len), pin: true, scrub: 1, animation: tl, anticipatePin: 1,
       onUpdate: rail ? () => {
         const items = $$('li', rail); let k = 0;
@@ -2422,6 +2535,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
         items.forEach((li, i) => li.classList.toggle('on', i === k));
       } : undefined,
     });
+    if (SL) SL.push({ st, tl, times });
     scrubs.push({ video: v, state, dur });
     ScrollTrigger.create({ trigger: sec, start: 'top bottom+=160%', once: true, onEnter: () => loadVideo(v) });
   }
@@ -2463,6 +2577,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
   /* ================= Accueil ================= */
   let heroTick = null;
   function initHome(page) {
+    SL = [];
     // 1. Tannerie : la vidéo avance avec le scroll, le vol du scarabée fait apparaître AKARBI
     (() => {
       const sec = $('#h-tannerie', page);
@@ -2509,7 +2624,9 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
       if (heroTick) gsap.ticker.remove(heroTick);
       heroTick = () => { if (!v.paused) paint(); };
       gsap.ticker.add(heroTick);
-      ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(400), pin: true, scrub: 1, animation: tl, anticipatePin: 1, onRefresh: paint });
+      const st = ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(400), pin: true, scrub: 1, animation: tl, anticipatePin: 1, onRefresh: paint });
+      // premier geste : le scarabée vole, AKARBI se révèle et la vidéo s'arrête sur le texte
+      SL.push({ st, tl, times: [fullAt(0.74, 0.03, parts)] });
       scrubs.push({ video: v, state, dur });
       const label = $('[data-cue-label]', sec);
       loadVideo(v).then(() => { if (label) label.textContent = 'Faites défiler'; sec.classList.add('is-ready'); paint(); });
@@ -2540,15 +2657,17 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
         .to(slit, { v: 0, duration: 0.12, ease: 'power2.inOut', onUpdate: applySlit }, 0.11)
         .set(stage, { backgroundColor: '#030605' }, 0.235)
         .to(state, { t: dur, duration: 0.48 }, 0.22);
-      playTexts(tl, $$('[data-pa-t]', sec).map((ov) => { const [a, b] = ov.dataset.paT.split(',').map(Number); return { ov, a, b }; }), 0.03, 0.022);
+      const times = playTexts(tl, $$('[data-pa-t]', sec).map((ov) => { const [a, b] = ov.dataset.paT.split(',').map(Number); return { ov, a, b }; }), 0.03, 0.022);
       // écran titre ACHIRA, puis la scène s'éteint avant la partie suivante
       const dim = $('[data-pa-dim]', sec);
       tl.to(dim, { opacity: 0.55, duration: 0.05 }, 0.71);
       const tparts = overlayIn(tl, $('[data-pa-title]', sec), 0.72, 0.03);
+      times.push(fullAt(0.72, 0.03, tparts));
       overlayOut(tl, tparts, 0.88, 0.03);
       tl.to(dim, { opacity: 0.8, duration: 0.07 }, 0.87)
         .set({}, {}, 0.96);
-      ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(800), pin: true, scrub: 1, animation: tl, anticipatePin: 1, invalidateOnRefresh: true });
+      const st = ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(800), pin: true, scrub: 1, animation: tl, anticipatePin: 1, invalidateOnRefresh: true });
+      SL.push({ st, tl, times });
       tl.eventCallback('onUpdate', () => { const t = tl.progress() < 0.145 ? 'light' : 'dark'; if (sec.dataset.tone !== t) { sec.dataset.tone = t; navTick(); } });
       scrubs.push({ video: v, state, dur });
       ScrollTrigger.create({ trigger: sec, start: 'top bottom+=160%', once: true, onEnter: () => loadVideo(v) });
@@ -2562,7 +2681,9 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
       // --- partie coffre + lettre
       const cTl = gsap.timeline({ defaults: { ease: 'none' } });
       cTl.to(state, { t: dur, duration: 0.6 }, 0);
-      playTexts(cTl, $$('[data-cf-t]', sec).map((ov) => { const [a, b] = ov.dataset.cfT.split(',').map(Number); return { ov, a, b }; }), 0.03, 0.025);
+      const times = playTexts(cTl, $$('[data-cf-t]', sec).map((ov) => { const [a, b] = ov.dataset.cfT.split(',').map(Number); return { ov, a, b }; }), 0.03, 0.025);
+      // la lettre lisible, puis TRUST YOUR WAY (fTl commence à 0.88 et dure 0.7) et enfin les liens
+      times.push(portrait() ? 0.71 : 0.86, 0.88 + 0.5 * 0.7, 0.88 + 0.9 * 0.7 + 0.01);
       const frame = $('[data-cf-frame]', sec), note = $('[data-cf-note]', sec);
       const fr = { k: 1, c: 0.66 };
       const applyFrame = () => {
@@ -2651,7 +2772,8 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
         const t = fTl.progress() > 0.7 ? 'light' : 'dark';
         if (sec.dataset.tone !== t) { sec.dataset.tone = t; navTick(); }
       });
-      ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(880), pin: true, scrub: 1, animation: tl, anticipatePin: 1, onRefresh: () => { applyFrame(); draw(); } });
+      const st = ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(880), pin: true, scrub: 1, animation: tl, anticipatePin: 1, onRefresh: () => { applyFrame(); draw(); } });
+      SL.push({ st, tl, times });
       scrubs.push({ video: v, state, dur });
       ScrollTrigger.create({ trigger: sec, start: 'top bottom+=160%', once: true, onEnter: () => loadVideo(v) });
       draw();
@@ -2709,7 +2831,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     const sel = name === 'heritage' && parts[1] ? selection(parts[1]) : null;
     if (name === 'heritage' && parts[1]) { if (!sel) { location.replace('#/heritage'); return; } name = 'selection'; }
     if (ctx) { ctx.revert(); ctx = null; }
-    scrubs.length = 0;
+    scrubs.length = 0; SL = null; sliding = false;
     closeCart(); closeMenu();
     $$('.page').forEach((p) => { p.hidden = p.dataset.page !== name; });
     if (name === 'produit' && !PRODUCTS[parts[1]]) { location.replace('#/produits'); return; }
