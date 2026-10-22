@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>AKARBI — Chapter 01</title>
-<meta name="description" content="La veste Signature. Le cercle s’ouvre le mardi 1er décembre à 20 h (Casablanca et Paris). Les inscrits entrent la veille.">
+<meta name="description" content="La veste Signature. Le cercle s’ouvre le mardi 1er décembre à 20 h (Casablanca et Paris). Inscris-toi pour être prévenu à l’ouverture.">
 <meta name="theme-color" content="#050f0c">
 <meta property="og:title" content="AKARBI — Chapter 01">
 <meta property="og:description" content="Le cercle s’ouvre le mardi 1er décembre à 20 h.">
@@ -142,7 +142,7 @@ html.gate-on, html.gate-on body { overflow: hidden !important; }
           <button class="g-btn" id="g-go" type="submit">Rejoindre le cercle</button>
         </div>
         <input class="g-hp" id="g-site" name="site" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <label class="g-consent" for="g-ok"><input id="g-ok" name="ok" type="checkbox"><span>J’accepte de recevoir les emails d’AKARBI : l’accès anticipé et les nouvelles de la maison. Désinscription en un clic. <a href="confidentialite.html" target="_blank" rel="noopener">Confidentialité</a></span></label>
+        <label class="g-consent" for="g-ok"><input id="g-ok" name="ok" type="checkbox"><span>J’accepte de recevoir les emails d’AKARBI : l’annonce de l’ouverture et les nouvelles de la maison. Désinscription en un clic. <a href="confidentialite.html" target="_blank" rel="noopener">Confidentialité</a></span></label>
         <p class="g-msg" id="g-msg" role="status" aria-live="polite"></p>
       </form>
 
@@ -178,19 +178,15 @@ html.gate-on, html.gate-on body { overflow: hidden !important; }
   if (!G) return;
   const CFG = {
   "ouverture": "2026-12-01T20:00:00+01:00",
-  "accesAnticipeHeures": 24,
   "codes": [
-    "jy3hkq7vcx"
+    "jy3hkq7vcx",
+    "3ny3uwjwry"
   ],
   "siteUrl": "/akarbi/index.html",
-  "klaviyoCompanyId": "",
-  "klaviyoListId": "",
-  "klaviyoRevision": "2026-07-15",
-  "doubleOptIn": true
+  "doubleOptIn": false
 };
   const $ = (s) => G.querySelector(s);
   const LAUNCH = Date.parse(CFG.ouverture);
-  const EARLY = LAUNCH - CFG.accesAnticipeHeures * 36e5;
   const KEY = 'akarbi-acces';
 
   // empreinte du code (cyrb53) : le code lui-même n'est pas écrit dans la page
@@ -203,11 +199,17 @@ html.gate-on, html.gate-on body { overflow: hidden !important; }
   };
   const empreinte = (code) => hash('akarbi-code:' + String(code || '').trim().toUpperCase());
   const bon = (code) => CFG.codes.includes(empreinte(code));
-  const lire = () => { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { return null; } };
-  const ecrire = (v) => { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) {} };
+  // sessionStorage : le code est redemandé dès que l'onglet est fermé
+  try { localStorage.removeItem(KEY); } catch (e) {}   // ancien accès mémorisé 30 jours
+  const lire = () => { try { return JSON.parse(sessionStorage.getItem(KEY) || 'null'); } catch (e) { return null; } };
+  const ecrire = (v) => { try { sessionStorage.setItem(KEY, JSON.stringify(v)); } catch (e) {} };
 
   const inerte = (on) => { for (const el of document.body.children) if (el !== G && el.tagName !== 'SCRIPT') { if (on) el.setAttribute('inert', ''); else el.removeAttribute('inert'); } };
   function ouvrir(anim) {
+    // le serveur (proxy.ts) bloque le site avant l'ouverture sans ce cookie
+    const m = lire();
+    // cookie de session (sans Max-Age) ; public/akarbi/index.html vérifie en plus le sessionStorage de l'onglet
+    if (m && m.h) document.cookie = `akarbi-acces=${m.h}; Path=/; SameSite=Lax; Secure`;
     if (CFG.siteUrl) { location.replace(CFG.siteUrl); return; }   // version page séparée : on part vers le site
     document.documentElement.classList.remove('gate-on');
     inerte(false);
@@ -230,8 +232,8 @@ html.gate-on, html.gate-on body { overflow: hidden !important; }
     if (lienCode !== null) { q.delete('code'); history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + location.hash); }
   } catch (e) {}
   const memo = lire();
-  if (Date.now() >= LAUNCH || (memo && CFG.codes.includes(memo.h) && memo.exp > Date.now()) || (lienCode && bon(lienCode))) {
-    if (lienCode && bon(lienCode)) ecrire({ h: empreinte(lienCode), exp: Date.now() + 30 * 864e5 });
+  if (Date.now() >= LAUNCH || (memo && CFG.codes.includes(memo.h)) || (lienCode && bon(lienCode))) {
+    if (lienCode && bon(lienCode)) ecrire({ h: empreinte(lienCode) });
     ouvrir(false);
     return;
   }
@@ -243,11 +245,10 @@ html.gate-on, html.gate-on body { overflow: hidden !important; }
   const heure = (d, tz) => { const p = parts(d, tz, { hour: 'numeric', minute: '2-digit', hourCycle: 'h23' }); return `${+p.hour} h${p.minute !== '00' ? ' ' + p.minute : ''}`; };
   const jour = (d, tz) => { const p = parts(d, tz, { weekday: 'long', day: 'numeric', month: 'long' }); return `${p.weekday} ${p.day === '1' ? '1<sup>er</sup>' : p.day} ${p.month}`; };
   const serre = (s) => s.replace(/ /g, ' ');
-  const L = new Date(LAUNCH), E = new Date(EARLY);
+  const L = new Date(LAUNCH);
   const hC = heure(L, 'Africa/Casablanca'), hP = heure(L, 'Europe/Paris');
   $('[data-g-date]').innerHTML = `Ouverture à tous : <b>${serre(jour(L, 'Africa/Casablanca'))}, ${hC}</b><span class="g-tz">${hP === hC ? 'Heure de Casablanca et de Paris' : `Heure de Casablanca · ${hP} à Paris`}</span>`;
-  const earlyTxt = serre(jour(E, 'Africa/Casablanca')).replace(/<\/?sup>/g, '') + ', ' + heure(E, 'Africa/Casablanca');
-  $('[data-g-join-d]').textContent = `Les inscrits entrent ${CFG.accesAnticipeHeures === 24 ? 'la veille' : CFG.accesAnticipeHeures + ' h avant'} : ${earlyTxt}.`;
+  $('[data-g-join-d]').textContent = 'Laisse ton email : on te prévient à la seconde où les portes s’ouvrent.';
 
   // 3. compte à rebours
   const U = { j: $('[data-g-u="j"]'), h: $('[data-g-u="h"]'), m: $('[data-g-u="m"]'), s: $('[data-g-u="s"]') };
@@ -257,7 +258,6 @@ html.gate-on, html.gate-on body { overflow: hidden !important; }
     const s = Math.floor(Math.max(0, LAUNCH - Date.now()) / 1000);
     chiffres(U.j, Math.floor(s / 86400)); chiffres(U.h, Math.floor(s / 3600) % 24);
     chiffres(U.m, Math.floor(s / 60) % 60); chiffres(U.s, s % 60);
-    if (Date.now() >= EARLY) $('[data-g-join-d]').textContent = 'Les inscrits sont déjà entrés. Inscris-toi pour ne rien rater de la suite.';
     if (s === 0 && !fini) { fini = true; $('[data-g-titre]').textContent = 'Le cercle est ouvert'; setTimeout(() => ouvrir(true), 1200); }
   }
   tick();
@@ -272,7 +272,7 @@ html.gate-on, html.gate-on body { overflow: hidden !important; }
     const v = codeIn.value.trim();
     if (!v) { codeMsg.textContent = 'Écris ton code.'; codeIn.focus(); return; }
     if (bon(v)) {
-      ecrire({ h: empreinte(v), exp: Date.now() + 30 * 864e5 });
+      ecrire({ h: empreinte(v) });
       codeMsg.textContent = 'Bienvenue.';
       ouvrir(true);
     } else {
@@ -283,40 +283,33 @@ html.gate-on, html.gate-on body { overflow: hidden !important; }
     }
   });
 
-  // 5. inscription au cercle (Klaviyo)
+  // 5. inscription au cercle (Supabase, via /api/inscription)
   const form = $('[data-g-form]'), msg = $('#g-msg'), btn = $('#g-go'), email = $('#g-email'), ok = $('#g-ok');
   const valid = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
   const utm = (() => { const o = {}; try { const q = new URLSearchParams(location.search); ['utm_source', 'utm_medium', 'utm_campaign'].forEach((k) => { const v = q.get(k); if (v) o[k] = v.slice(0, 80); }); } catch (e) {} return o; })();
   async function inscrire(addr) {
-    if (!CFG.klaviyoCompanyId || !CFG.klaviyoListId) throw Object.assign(new Error('config'), { code: 'config' });
-    const body = { data: { type: 'subscription', attributes: {
-      custom_source: 'Compte à rebours Chapter 01' + (utm.utm_source ? ' · ' + utm.utm_source : ''),
-      profile: { data: { type: 'profile', attributes: {
-        email: addr,
-        properties: { chapitre: 'Chapter 01', inscription_page: 'compte-a-rebours', jours_avant_ouverture: Math.ceil(Math.max(0, LAUNCH - Date.now()) / 864e5), ...utm },
-        subscriptions: { email: { marketing: { consent: 'SUBSCRIBED' } } }
-      } } }
-    }, relationships: { list: { data: { type: 'list', id: CFG.klaviyoListId } } } } };
-    const r = await fetch('https://a.klaviyo.com/client/subscriptions?company_id=' + encodeURIComponent(CFG.klaviyoCompanyId), {
-      method: 'POST', headers: { 'content-type': 'application/json', revision: CFG.klaviyoRevision }, body: JSON.stringify(body)
+    const r = await fetch('/api/inscription', {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email: addr, consentement: true, source: 'compte-a-rebours', ...utm })
     });
+    if (r.status === 500) throw Object.assign(new Error('config'), { code: 'config' });
     if (!r.ok) throw Object.assign(new Error('http ' + r.status), { code: 'http' });
   }
   function merci() {
     form.hidden = true;
     $('[data-g-done-d]').textContent = (CFG.doubleOptIn ? 'Confirme ton inscription dans l’email que tu vas recevoir. ' : '')
-      + (Date.now() >= EARLY ? 'On te tient au courant de la suite.' : `Le lien d’accès anticipé arrive le ${earlyTxt}.`);
+      + 'Ton email de bienvenue vient de partir. On te prévient à l’ouverture.';
     $('[data-g-done]').hidden = false; $('#g-done-t').focus();
   }
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const v = email.value.trim();
     if (!valid(v)) { msg.textContent = 'Cette adresse ne semble pas valide. Vérifie-la puis réessaie.'; email.focus(); return; }
-    if (!ok.checked) { msg.textContent = 'Coche la case pour recevoir l’accès anticipé.'; ok.focus(); return; }
+    if (!ok.checked) { msg.textContent = 'Coche la case pour être prévenu à l’ouverture.'; ok.focus(); return; }
     if ($('#g-site').value) { merci(); return; }
     msg.textContent = ''; btn.disabled = true; btn.textContent = 'Envoi…';
     try { await inscrire(v); merci(); }
-    catch (err) { msg.textContent = err.code === 'config' ? 'Les inscriptions ne sont pas encore branchées : il manque la clé Klaviyo dans la page.' : 'L’inscription n’est pas partie. Vérifie ta connexion et réessaie.'; }
+    catch (err) { msg.textContent = err.code === 'config' ? 'Les inscriptions ne sont pas encore branchées : il manque la configuration Supabase.' : 'L’inscription n’est pas partie. Vérifie ta connexion et réessaie.'; }
     finally { btn.disabled = false; btn.textContent = 'Rejoindre le cercle'; }
   });
 })();

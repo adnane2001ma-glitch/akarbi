@@ -1,4 +1,17 @@
 <!doctype html><html><head>
+<script>
+/* Avant l'ouverture, le code est valable pour l'onglet seulement (sessionStorage, posé par compte-a-rebours.html).
+   Onglet fermé puis rouvert : le cookie de session peut survivre, on le supprime et on renvoie au compte à rebours.
+   Ouverture et empreintes : identiques à lib/lancement.ts */
+(function () {
+  if (Date.now() >= Date.parse('2026-12-01T20:00:00+01:00')) return;
+  var m = null;
+  try { m = JSON.parse(sessionStorage.getItem('akarbi-acces') || 'null'); } catch (e) {}
+  if (m && ['jy3hkq7vcx', '3ny3uwjwry'].indexOf(m.h) !== -1) return;
+  document.cookie = 'akarbi-acces=; Path=/; Max-Age=0; SameSite=Lax; Secure';
+  location.replace(window.top !== window ? '/akarbi-gate/compte-a-rebours.html' : '/');
+})();
+</script>
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -109,13 +122,18 @@ ul, ol { list-style: none; }
 .nav__mono svg { height: 18px; width: auto; }
 .nav__word { display: block; max-width: 120px; overflow: hidden; transition: max-width .8s var(--ease), opacity .45s var(--ease); }
 .nav__word svg { height: 18px; width: auto; }
-.nav__links { display: flex; align-items: center; gap: clamp(16px, 2.2vw, 34px); max-width: 480px; overflow: hidden; white-space: nowrap; transition: max-width .8s var(--ease), opacity .45s var(--ease); }
+.nav__links { display: flex; align-items: center; gap: clamp(16px, 2.2vw, 34px); max-width: 620px; overflow: hidden; white-space: nowrap; transition: max-width .8s var(--ease), opacity .45s var(--ease); }
 .nav__links a { font: 400 11px/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: rgba(238, 229, 211, .72); padding: 8px 0; transition: color .3s; }
 .nav__links a:hover, .nav__links a[aria-current] { color: var(--ivory); }
 .nav__links a[aria-current] { box-shadow: inset 0 -1px 0 rgba(238, 229, 211, .5); }
 .nav__cart { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 999px; background: rgba(238, 229, 211, .12); color: rgba(238, 229, 211, .78); font: 600 10px/1 var(--sans); max-width: 120px; overflow: hidden; transition: background .3s, color .3s, max-width .8s var(--ease), padding .8s var(--ease), opacity .45s var(--ease); }
 .nav__cart:hover { background: rgba(238, 229, 211, .2); color: var(--ivory); }
 .nav__cart svg { width: 15px; height: 15px; flex: none; }
+.nav__compte [data-compte-nom]:empty { display: none; }
+.nav__compte [data-compte-nom] { max-width: 9ch; overflow: hidden; text-overflow: ellipsis; letter-spacing: .08em; }
+.prod__fav { justify-self: start; display: inline-flex; align-items: center; gap: 10px; padding: 6px 0; font: 600 12px/1 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--ink); border-bottom: 1px solid currentColor; }
+.prod__fav svg { width: 16px; height: 16px; }
+.prod__fav[aria-pressed="true"] svg path { fill: var(--achira); stroke: var(--achira); }
 .nav__count { min-width: 16px; text-align: center; }
 .nav__brand, .nav__cart, .nav__menu { position: relative; }
 .nav__brand::after, .nav__cart::after, .nav__menu::after { content: ''; position: absolute; inset: -8px -4px; }
@@ -155,9 +173,6 @@ section { position: relative; }
 .hero-dark { position: absolute; inset: 0; z-index: 4; background: #030605; opacity: 0; pointer-events: none; }
 .h-hero .scrollcue { z-index: 5; }
 .scrollcue { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); display: grid; justify-items: center; gap: 10px; font: 600 10px/1 var(--sans); letter-spacing: .3em; text-transform: uppercase; color: var(--iv60); }
-/* au début de l'accueil, « Faites défiler » est grand, dans la même voix que les textes de la vidéo */
-.h-hero .scrollcue { bottom: clamp(22px, 5vh, 48px); gap: 14px; font: italic 400 clamp(24px, 2.4vw, 38px)/1.1 var(--serif); letter-spacing: .02em; text-transform: none; color: var(--ivory); text-shadow: 0 2px 18px rgba(0, 0, 0, .6); white-space: nowrap; }
-.h-hero .scrollcue i { height: 56px; }
 .scrollcue i { width: 1px; height: 44px; background: linear-gradient(var(--ivory), transparent); animation: cue 2.2s var(--ease) infinite; transform-origin: top; }
 @keyframes cue { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
 
@@ -186,8 +201,6 @@ section { position: relative; }
 .ov--bl { left: var(--gut); bottom: clamp(60px, 12vh, 130px); }
 .ov--br { right: var(--gut); bottom: clamp(60px, 12vh, 130px); text-align: right; justify-items: end; }
 .ov--tl { left: var(--gut); top: clamp(110px, 17vh, 180px); }
-html.home-wait .ov, html.home-wait [data-hero-after], html.home-wait [data-pa-title], html.home-wait [data-cf-note], html.home-wait [data-rail] { visibility: hidden; }
-.ov--tr { right: var(--gut); top: clamp(110px, 17vh, 180px); text-align: right; justify-items: end; }
 .step { gap: 10px; max-width: min(560px, 86vw); }
 .step__num { font: 400 clamp(56px, 6.4vw, 108px)/.8 var(--brand); letter-spacing: .04em; color: var(--champ); text-shadow: 0 2px 30px rgba(0, 0, 0, .5); }
 .step__title { font: 400 clamp(34px, 3.8vw, 64px)/1 var(--brand); letter-spacing: .04em; color: var(--ivory); text-wrap: balance; text-shadow: 0 2px 30px rgba(0, 0, 0, .6); }
@@ -347,6 +360,12 @@ html.home-wait .ov, html.home-wait [data-hero-after], html.home-wait [data-pa-ti
 .prod__title { font: 400 clamp(44px, 5vw, 80px)/.95 var(--brand); letter-spacing: .04em; color: var(--ink); }
 .prod__color { font: italic 400 26px/1.1 var(--serif); color: var(--ink2); }
 .prod__price { font: 500 22px/1 var(--sans); color: var(--ink); }
+.prod__price small { font: 400 15px/1 var(--sans); color: var(--ink2); margin-left: 10px; }
+.prod__desc { font: 400 15px/1.7 var(--sans); color: var(--ink2); white-space: pre-line; max-width: 52ch; }
+.acc__in p { white-space: pre-line; }
+.cats { width: 100%; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: -8px 0 6px; }
+.cats button { min-height: 36px; padding: 0 16px; border-radius: 999px; border: 1px solid rgba(16, 35, 29, .18); font: 500 13px/1 var(--sans); color: var(--ink2); transition: background .25s, color .25s, border-color .25s; }
+.cats button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
 .opt { display: grid; gap: 10px; }
 .opt__label { font: 600 11px/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--ink2); }
 .swatches, .sizes { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -467,6 +486,177 @@ html.home-wait .ov, html.home-wait [data-hero-after], html.home-wait [data-pa-ti
 .toast.show { visibility: visible; transform: translate(-50%, 0); }
 
 /* ---------- Responsive ---------- */
+/* ---------- Héritage ---------- */
+.he-liste { background: var(--p950); }
+.he-grille { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(36px, 5vh, 56px) clamp(16px, 2vw, 28px); align-items: start; }
+.hcard { position: relative; display: grid; gap: 10px; align-content: start; }
+.hcard__media { position: relative; display: block; aspect-ratio: 4 / 5; border-radius: 14px; overflow: hidden; background: var(--p800); margin-bottom: 8px; }
+.hcard__media img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); }
+.hcard:hover .hcard__media img { transform: scale(1.04); }
+.hcard .eyebrow { color: var(--champ); }
+.hcard .h4 { color: var(--ivory); }
+.hcard .h4 a::after { content: ''; position: absolute; inset: 0; }
+.hcard__meta { font-size: 14px; color: var(--iv60); }
+.hx-hero { min-height: 78vh; min-height: 78svh; }
+.hx-hero__compte { font: 600 11px/1 var(--sans); letter-spacing: .24em; text-transform: uppercase; color: var(--iv80); }
+.hx { display: grid; grid-template-columns: minmax(220px, 270px) minmax(0, 1fr); gap: clamp(28px, 3.4vw, 64px); align-items: start; padding: clamp(48px, 7vh, 88px) var(--gut) clamp(96px, 14vh, 160px); }
+.hx-side { position: sticky; top: 92px; z-index: 2; max-height: calc(100vh - 116px); overflow-y: auto; overscroll-behavior: contain; display: grid; gap: 14px; align-content: start; margin-left: -14px; padding: 0 6px 0 14px; scrollbar-width: thin; }
+.hx-side > .eyebrow { color: var(--ink2); }
+.hx-tout { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(16, 35, 29, .14); font: 600 11px/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--ink2); transition: color .25s; }
+.hx-tout:hover, .hx-tout[aria-pressed="true"] { color: var(--ink); }
+.hx-fam { position: relative; border-bottom: 1px solid rgba(16, 35, 29, .12); }
+.hx-fam::before { content: ''; position: absolute; left: -14px; top: 12px; bottom: 12px; width: 2px; background: var(--achira); transform: scaleY(0); transform-origin: top; transition: transform .5s var(--ease); }
+.hx-fam.is-ouverte::before { transform: scaleY(1); }
+.hx-fam__btn { width: 100%; display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 10px; align-items: baseline; padding: 13px 0; text-align: left; color: var(--ink2); transition: color .25s; }
+.hx-fam__btn b { font: 400 18px/1 var(--brand); letter-spacing: .08em; color: var(--achira); }
+.hx-fam__btn span { font: 500 13.5px/1.3 var(--sans); }
+.hx-fam__btn i { font: 600 10px/1 var(--sans); font-style: normal; letter-spacing: .14em; text-transform: uppercase; opacity: .7; }
+.hx-fam__btn:hover, .hx-fam.is-ouverte .hx-fam__btn { color: var(--ink); }
+.hx-fam__btn[aria-pressed="true"] span { text-decoration: underline; text-underline-offset: 4px; }
+.hx-fam.is-vide .hx-fam__btn { opacity: .4; cursor: default; }
+.hx-sels { display: none; gap: 2px; padding: 0 0 14px 40px; }
+.hx-fam.is-ouverte .hx-sels { display: grid; }
+.hx-sels a { display: block; padding: 5px 0; font: italic 400 16px/1.3 var(--serif); color: var(--ink2); transition: color .25s, transform .4s var(--ease); }
+.hx-sels a:hover { color: var(--ink); }
+.hx-sels a[aria-current="true"] { color: var(--achira); transform: translateX(4px); }
+.hx-feed { display: grid; grid-template-columns: repeat(var(--hx-cols, 3), minmax(0, 1fr)); gap: 0 clamp(14px, 1.5vw, 24px); align-items: start; min-height: 50vh; }
+.hx-col { display: grid; gap: clamp(44px, 6vh, 68px); align-content: start; }
+.hx-col:nth-child(2) { padding-top: clamp(56px, 10vh, 120px); }
+.hx-col:nth-child(3) { padding-top: clamp(20px, 4vh, 44px); }
+.hx-card { position: relative; display: grid; }
+.hx-card__media { display: block; border-radius: 14px; overflow: hidden; background: #e3d6bd; margin-bottom: 16px; }
+.hx-card__media img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); }
+.hx-card:hover .hx-card__media img { transform: scale(1.035); }
+.hx-card__fam { margin-bottom: 8px; font: 600 10px/1.4 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--ink2); }
+.hx-card__fam b { margin-right: 8px; color: var(--achira); font-weight: 600; }
+.hx-card__titre { font: 400 clamp(22px, 1.9vw, 30px)/1 var(--brand); letter-spacing: .05em; color: var(--ink); }
+.hx-card__titre a::after { content: ''; position: absolute; inset: 0; }
+.hx-card__acc { margin-top: 8px; max-width: 40ch; font: italic 400 17px/1.35 var(--serif); color: var(--ink2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.hx-card__pied { margin-top: 14px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font: 400 12.5px/1.3 var(--sans); color: var(--ink2); }
+.hx-card__cta { flex: none; padding-bottom: 5px; border-bottom: 1px solid currentColor; font: 600 10.5px/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--ink); }
+.hx-card__cta span { display: inline-block; transition: transform .35s var(--ease); }
+.hx-card:hover .hx-card__cta span { transform: translateX(5px); }
+.hx-vide { grid-column: 1 / -1; padding: 24px 0; font: italic 400 clamp(22px, 2vw, 30px)/1.3 var(--serif); color: var(--ink2); }
+/* l'image d'ouverture reste fixe, le contenu glisse par-dessus jusqu'à la couvrir */
+.hx-hero, .se-hero { position: sticky; top: 0; z-index: 0; }
+.hx-hero ~ section, .se-hero ~ section { position: relative; z-index: 1; }
+.hx-hero ~ .hx { box-shadow: 0 -40px 80px -20px rgba(5, 15, 12, .35); }
+@media (min-width: 901px) {
+  .hx-side { opacity: .55; transition: opacity .45s var(--ease); }
+  .hx-side:hover, .hx-side:focus-within { opacity: 1; }
+}
+/* rail de rappel des sélections (page d'une sélection) */
+.se-rail { position: fixed; left: 12px; top: 50%; transform: translateY(-50%); z-index: 30; display: grid; gap: 2px; width: 46px; max-height: 76vh; overflow: hidden auto; scrollbar-width: none; padding: 12px 8px; border-radius: 16px; background: rgba(20, 3, 9, .42); border: 1px solid rgba(238, 229, 211, .12); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); opacity: .5; color: var(--ivory); transition: width .55s var(--ease), opacity .4s, background .4s; }
+.se-rail::-webkit-scrollbar { display: none; }
+.se-rail:hover, .se-rail:focus-within { width: 280px; opacity: 1; background: rgba(20, 3, 9, .9); }
+.se-rail a, .se-rail__fam { display: grid; grid-template-columns: 28px minmax(0, 1fr); align-items: center; gap: 10px; min-height: 28px; white-space: nowrap; }
+.se-rail span { overflow: hidden; text-overflow: ellipsis; opacity: 0; transition: opacity .25s; }
+.se-rail:hover span, .se-rail:focus-within span { opacity: 1; transition-delay: .12s; }
+.se-rail__fam { margin-top: 10px; font: 600 9.5px/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--iv60); }
+.se-rail__fam b { text-align: center; font: 400 15px/1 var(--brand); letter-spacing: .06em; color: #c23a52; }
+.se-rail a { font: italic 400 15px/1.2 var(--serif); color: var(--iv60); }
+.se-rail a i { justify-self: center; width: 12px; height: 1.5px; background: currentColor; transition: width .35s var(--ease), background .3s; }
+.se-rail a:hover { color: var(--ivory); }
+.se-rail a[aria-current] { color: var(--ivory); }
+.se-rail a[aria-current] i { width: 22px; background: #c23a52; }
+.se-rail a.se-rail__tout { font: 600 10px/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--iv80); }
+.se-rail a.se-rail__tout i { width: auto; height: auto; background: none; font-style: normal; }
+@media (max-width: 1100px), (hover: none) { .se-rail { display: none; } }
+/* précédente / suivante */
+.se-suite { display: grid; grid-template-columns: 1fr 1fr; }
+.se-suite__lien { display: grid; gap: 12px; align-content: start; padding: clamp(40px, 7vh, 72px) var(--gut); color: var(--ink); transition: background .4s var(--ease); }
+.se-suite__lien:hover { background: #e3d6bd; }
+.se-suite__lien--suiv { justify-items: end; text-align: right; border-left: 1px solid rgba(16, 35, 29, .14); }
+.se-suite small { font: 600 10.5px/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--ink2); }
+.se-suite b { font: 400 clamp(28px, 3vw, 48px)/1 var(--brand); letter-spacing: .04em; font-weight: 400; }
+.se-suite em { font: italic 400 17px/1.2 var(--serif); color: var(--ink2); }
+/* produits : barre de tri (discrète tant qu'on ne la survole pas) */
+.pr { overflow: clip; }
+.pr-grille { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: clamp(24px, 3vw, 56px); align-items: start; }
+.pr-side { position: sticky; top: 100px; max-height: calc(100vh - 120px); overflow-y: auto; scrollbar-width: none; padding: 10px 8px 0 0; }
+.pr-side::-webkit-scrollbar { display: none; }
+.pr-tri > summary { list-style: none; cursor: pointer; }
+.pr-tri > summary::-webkit-details-marker { display: none; }
+.pr-tri__in { display: grid; gap: 26px; }
+.pr-res { font: italic 400 22px/1.2 var(--serif); color: var(--ink); }
+.pr-groupe { display: grid; gap: 8px; }
+.pr-groupe > p { padding-bottom: 10px; margin-bottom: 2px; border-bottom: 1px solid rgba(16, 35, 29, .14); font: 600 10.5px/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--ink2); }
+.pr-opt { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; width: 100%; padding: 4px 0; text-align: left; font: 400 14px/1.3 var(--sans); color: var(--ink2); transition: color .25s, transform .35s var(--ease); }
+.pr-opt::before { content: ''; width: 6px; height: 6px; border-radius: 50%; border: 1px solid currentColor; opacity: .5; }
+.pr-opt:hover { color: var(--ink); }
+.pr-opt[aria-pressed="true"] { color: var(--ink); font-weight: 600; transform: translateX(3px); }
+.pr-opt[aria-pressed="true"]::before { background: var(--achira); border-color: var(--achira); opacity: 1; }
+.pr-opt small { font-size: 11px; font-weight: 400; color: var(--ink2); opacity: .75; }
+.pr-opt i { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(16, 35, 29, .25); }
+.pr-opt--teinte::before { display: none; }
+.pr-opt--teinte[aria-pressed="true"] i { box-shadow: 0 0 0 2px var(--paper), 0 0 0 3px var(--ink); }
+.pr-tailles { display: flex; flex-wrap: wrap; gap: 6px; }
+.pr-taille { min-width: 40px; height: 34px; padding: 0 10px; border: 1px solid rgba(16, 35, 29, .2); border-radius: 999px; font: 500 12px/1 var(--sans); color: var(--ink2); transition: background .25s, color .25s, border-color .25s; }
+.pr-taille:hover { border-color: var(--ink); color: var(--ink); }
+.pr-taille[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.pr-reset { justify-self: start; padding-bottom: 5px; border-bottom: 1px solid currentColor; font: 600 10.5px/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--achira); }
+.pr-vide { width: 100%; display: grid; justify-items: center; gap: 16px; padding: 60px 0; text-align: center; font: italic 400 22px/1.3 var(--serif); color: var(--ink2); }
+@media (min-width: 901px) {
+  .pr-tri > summary { display: none; }
+  .pr-side { opacity: .5; transition: opacity .45s var(--ease); }
+  .pr-side:hover, .pr-side:focus-within { opacity: 1; }
+}
+@media (max-width: 900px) {
+  .pr-grille { grid-template-columns: 1fr; gap: 0; }
+  .pr-side { position: static; max-height: none; overflow: visible; padding: 0 0 22px; }
+  .pr-tri > summary { display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 18px; border: 1px solid rgba(16, 35, 29, .25); border-radius: 999px; font: 600 11px/1 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--ink); }
+  .pr-tri[open] > summary { margin-bottom: 18px; background: var(--ink); color: var(--paper); }
+  .pr-tri__in { padding: 20px; border-radius: 14px; background: rgba(227, 214, 189, .6); }
+  .se-suite { grid-template-columns: 1fr; }
+  .se-suite__lien--suiv { border-left: 0; border-top: 1px solid rgba(16, 35, 29, .14); }
+}
+.se-hero { min-height: 100vh; min-height: 100svh; }
+.se-hero .display { font-size: clamp(56px, 9vw, 150px); max-width: 12ch; text-wrap: balance; }
+.se-meta { display: flex; flex-wrap: wrap; gap: 10px; }
+.se-meta li { padding: 10px 16px; border: 1px solid var(--iv30); border-radius: 999px; font: 600 11px/1 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--ivory); }
+.se-recit { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(36px, 6vw, 110px); align-items: start; }
+.se-aside { position: sticky; top: 120px; display: grid; gap: 18px; }
+.se-aside dl { display: grid; margin: 0; border-top: 1px solid rgba(16, 35, 29, .14); }
+.se-aside dl > div { display: grid; gap: 6px; padding: 16px 0; border-bottom: 1px solid rgba(16, 35, 29, .14); }
+.se-aside dt { font: 600 11px/1.4 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--achira); }
+.se-aside dd { margin: 0; font-size: 15px; color: var(--ink); }
+.se-texte { display: grid; gap: 1.1em; }
+.se-texte p { max-width: 62ch; color: var(--ink2); }
+.se-texte p:first-child { font: 400 clamp(22px, 1.9vw, 30px)/1.35 var(--serif); color: var(--ink); }
+.se-credit { font-size: 12px; color: var(--ink2); margin-top: 12px; }
+.se-galerie { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: clamp(12px, 1.4vw, 20px); align-items: start; }
+.se-galerie img { width: 100%; border-radius: 14px; object-fit: cover; grid-column: span 6; aspect-ratio: 4 / 3; }
+.se-galerie img:nth-child(4n+1), .se-galerie img:nth-child(4n+4) { grid-column: span 7; }
+.se-galerie img:nth-child(4n+2), .se-galerie img:nth-child(4n+3) { grid-column: span 5; aspect-ratio: 4 / 5; }
+.se-galerie img:only-child { grid-column: 1 / -1; aspect-ratio: 16 / 9; }
+.se-adn .statement { color: var(--ivory); max-width: 26ch; }
+.prod__herit { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 16px; align-items: center; padding: 12px; border-radius: 14px; border: 1px solid rgba(16, 35, 29, .16); color: var(--ink); transition: border-color .3s; }
+.prod__herit:hover { border-color: var(--ink); }
+.prod__herit img { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; background: #e3d6bd; }
+.prod__herit small { display: block; margin-bottom: 6px; font: 600 10px/1.3 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--ink2); }
+.prod__herit b { font: 400 20px/1.05 var(--brand); letter-spacing: .06em; }
+@media (max-width: 900px) {
+  .he-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .hx { grid-template-columns: 1fr; gap: 0; padding-top: 0; }
+  .hx-side { top: 70px; max-height: none; display: flex; gap: 8px; overflow-x: auto; overflow-y: hidden; margin: 0 calc(-1 * var(--gut)); padding: 12px var(--gut); background: rgba(238, 229, 211, .94); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(16, 35, 29, .1); scrollbar-width: none; }
+  .hx-side::-webkit-scrollbar { display: none; }
+  .hx-side > .eyebrow, .hx-sels, .hx-fam.is-vide { display: none !important; }
+  .hx-arbre { display: flex; gap: 8px; }
+  .hx-fam { border: 0; }
+  .hx-fam::before { display: none; }
+  .hx-tout, .hx-fam__btn { display: inline-flex; align-items: center; gap: 8px; width: auto; min-height: 38px; padding: 0 14px; border: 1px solid rgba(16, 35, 29, .2); border-radius: 999px; white-space: nowrap; }
+  .hx-tout[aria-pressed="true"], .hx-fam__btn[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .hx-fam__btn[aria-pressed="true"] b { color: inherit; }
+  .hx-fam__btn[aria-pressed="true"] span { text-decoration: none; }
+  .hx-feed { padding-top: 32px; }
+  .se-recit { grid-template-columns: 1fr; }
+  .se-aside { position: static; order: 2; }
+  .se-galerie img:nth-child(n) { grid-column: 1 / -1; aspect-ratio: 4 / 3; }
+}
+@media (max-width: 560px) {
+  .he-grille { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 900px) {
   .coll-grid { --cols: 2; }
   .steps3, .trio, .grid4, .values, .chapters, .u-trio { grid-template-columns: 1fr; }
@@ -503,7 +693,6 @@ html.home-wait .ov, html.home-wait [data-hero-after], html.home-wait [data-pa-ti
   .pa__portraits .ph { width: 45vw; height: 58vh; height: 58svh; aspect-ratio: auto; max-width: none; }
   .pa__portraits { align-items: center; padding-top: 70px; }
   .ov--mt, .ov--tl { top: clamp(92px, 14vh, 130px); bottom: auto; }
-  .ov--tr { left: var(--gut); right: var(--gut); top: clamp(92px, 14vh, 130px); text-align: left; justify-items: start; }
   .ov--br { left: var(--gut); right: var(--gut); bottom: 14vh; text-align: left; justify-items: start; }
   .step, .step--end { max-width: none; }
   .step__num { font-size: 48px; }
@@ -596,9 +785,14 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     <a class="nav__brand" href="#/" aria-label="AKARBI, accueil"><span class="nav__mono"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1140 716" fill="currentColor" fill-rule="evenodd"><path d="M1090,36 L783,36 L845,126 L620,394 L617,393 L618,0 L604,10 L372,237 L367,235 L276,127 L334,36 L39,36 L57,62 L265,320 L0,620 L313,620 L256,539 L352,431 L501,612 L530,652 L566,715 L583,675 L620,615 L667,553 L785,409 L901,540 L843,620 L1139,620 L1014,467 L873,302Z M111,71 L266,70 L268,74 L230,128 L368,290 L581,82 L584,491 L890,129 L852,75 L852,70 L1014,70 L1015,74 L903,208 L829,303 L1066,585 L914,585 L945,538 L789,355 L786,355 L638,534 L598,586 L564,641 L531,593 L354,378 L212,537 L212,541 L244,581 L245,586 L80,586 L79,582 L311,322Z M525,222 L405,339 L409,348 L522,481 L525,450Z M488,304 L490,389 L451,345 L451,341Z"/></svg></span><span class="nav__word"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 717 296" fill="currentColor" fill-rule="evenodd"><path d="M676,1 L676,274 L673,277 L657,276 L657,295 L699,295 L703,292 L700,265 L699,210 L700,20 L716,16 L716,2Z M554,1 L553,293 L575,293 L653,214 L644,198 L601,145 L642,96 L649,83 L577,2Z M583,158 L632,215 L579,268 L577,168Z M581,31 L622,80 L625,89 L583,139 L578,142 L576,96 L579,32Z M149,1 L147,292 L173,293 L175,291 L172,179 L178,152 L181,150 L227,293 L254,293 L255,288 L230,222 L202,137 L193,117 L207,78 L241,2 L228,1 L180,114 L177,126 L173,130 L171,121 L176,1Z M433,1 L430,292 L456,292 L456,178 L464,166 L469,163 L482,209 L484,226 L500,292 L502,294 L529,293 L489,140 L489,133 L523,92 L523,87 L454,0Z M459,29 L493,71 L506,91 L457,155 L456,72 L457,30Z M335,0 L328,27 L309,148 L282,292 L315,293 L317,291 L317,278 L298,276 L297,270 L328,100 L334,83 L364,225 L375,292 L401,293 L403,292 L403,286 L364,104 L348,17 L343,1Z M53,0 L48,11 L12,232 L0,291 L1,293 L34,292 L34,278 L17,276 L15,271 L48,86 L51,83 L83,232 L93,292 L121,293 L68,31 L61,3 L58,0Z"/></svg></span></a>
     <div class="nav__links">
       <a href="#/produits" data-route="produits">Produits</a>
+      <a href="#/heritage" data-route="heritage">Héritage</a>
       <a href="#/achira" data-route="achira">ACHIRA</a>
       <a href="#/univers" data-route="univers">Univers AKARBI</a>
     </div>
+    <a class="nav__cart nav__compte" href="/compte" target="_top" aria-label="Mon compte" data-compte>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z M4.5 20c.8-3.6 3.9-6 7.5-6s6.7 2.4 7.5 6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+      <span data-compte-nom></span>
+    </a>
     <button class="nav__cart" type="button" data-cart-open aria-label="Ouvrir le panier">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8Z M9 8V6a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
       <span class="nav__count" data-cart-count data-n="0">0</span>
@@ -612,8 +806,10 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
 <div class="mmenu" id="mmenu" aria-hidden="true">
   <a href="#/">Accueil</a>
   <a href="#/produits">Produits</a>
+  <a href="#/heritage">Héritage</a>
   <a href="#/achira">ACHIRA</a>
   <a href="#/univers">Univers AKARBI</a>
+  <a href="/compte" target="_top">Mon compte</a>
 </div>
 
 <main id="contenu">
@@ -833,19 +1029,29 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     <h1 class="display" style="color:var(--ink)" data-split>Première trace</h1>
     <p class="lead" data-reveal style="max-width:30ch">Le premier chapitre raconte la naissance d’AKARBI : une rencontre, des parcours qui se croisent et une ambition qui prend forme.</p>
   </section>
-  <section class="light paper-grain h-coll" data-tone="light" style="padding:0 var(--gut) clamp(90px,14vh,160px)">
+  <section class="light paper-grain h-coll pr" data-tone="light" style="padding:0 var(--gut) clamp(90px,14vh,160px)">
+    <div class="pr-grille">
+      <aside class="pr-side" aria-label="Trier et filtrer les pièces">
+        <details class="pr-tri" data-tri-details>
+          <summary>Trier et filtrer <span data-tri-compte></span></summary>
+          <div class="pr-tri__in" data-tri></div>
+        </details>
+      </aside>
+      <div class="pr-main">
     <div class="tabs" role="tablist" aria-label="Collection" data-tabs>
       <button type="button" role="tab" aria-selected="true" data-tab="homme">Homme</button>
       <button type="button" role="tab" aria-selected="false" data-tab="femme">Femme</button>
     </div>
-    <div class="coll-grid" data-products role="tabpanel" aria-label="Pièces de la collection"></div>
+    <div class="coll-grid" data-products data-filtrable role="tabpanel" aria-label="Pièces de la collection"></div>
+      </div>
+    </div>
   </section>
   <section class="pad" data-tone="dark" style="background:var(--p900)">
     <div style="display:grid;gap:18px;margin-bottom:clamp(40px,7vh,80px)">
       <p class="eyebrow" data-reveal>La signature</p>
       <h2 class="h2" data-split>Une forme que l’on reconnaît.</h2>
     </div>
-    <div class="trio">
+    <div class="trio" data-signature>
       <figure data-reveal><img src="img/d-cuir.webp" alt="Gros plan sur le cuir vert pétrole grain croco" loading="lazy"><figcaption><h3 class="h4">Le cuir</h3><p class="body">Un grain croco embossé qui prend la lumière.</p></figcaption></figure>
       <figure data-reveal><img src="img/d-epaule.webp" alt="L'épaule de la veste avec son empiècement bordeaux" loading="lazy"><figcaption><h3 class="h4">La trace</h3><p class="body">L’empiècement d’épaule, contrasté, qui signe la silhouette.</p></figcaption></figure>
       <figure data-reveal><img src="img/d-logo.webp" alt="Le monogramme AKARBI en métal près du zip" loading="lazy"><figcaption><h3 class="h4">Le monogramme</h3><p class="body">Le signe AKARBI en métal, côté cœur.</p></figcaption></figure>
@@ -882,6 +1088,29 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     </div>
     <div class="coll-grid" data-other></div>
   </section>
+</div>
+
+<!-- =================== HÉRITAGE =================== -->
+<!-- En-tête et sélections viennent du dashboard (/admin/heritage) via /api/catalogue -->
+<div class="page" data-page="heritage" hidden>
+  <section class="pg-hero pg-hero--img hx-hero" data-tone="dark">
+    <img src="img/u-tannerie.webp" alt="Un artisan travaille une peau au milieu des cuves de la tannerie" data-hx-image>
+    <div class="pg-hero__in">
+      <p class="eyebrow" data-reveal data-hx-surtitre>Héritage</p>
+      <h1 class="display" data-split data-hx-titre>Ce qui nous précède.</h1>
+      <p class="lead" data-reveal data-hx-texte style="max-width:40ch">Des gestes, des lieux, des mémoires : le Maroc qui nourrit l’identité d’AKARBI. Huit familles pour le raconter, une sélection après l’autre.</p>
+      <p class="hx-hero__compte" data-reveal data-hx-compte></p>
+    </div>
+  </section>
+  <section class="light paper-grain hx" data-tone="light">
+    <aside class="hx-side" aria-label="Schéma Héritage" data-hx-side></aside>
+    <div class="hx-feed" data-hx-feed></div>
+  </section>
+</div>
+
+<!-- =================== SÉLECTION HÉRITAGE =================== -->
+<div class="page" data-page="selection" hidden>
+  <div data-selection></div>
 </div>
 
 <!-- =================== ACHIRA =================== -->
@@ -945,7 +1174,6 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     <p class="lead" data-reveal>Le compte AKARBI montre la marque. Le compte ACHIRA montre le chemin.</p>
     <div class="row-cta" data-reveal style="justify-content:center">
       <a class="btn btn--solid" href="#/produits">Commencer par une pièce</a>
-      <a class="btn btn--line" href="https://achira-weld.vercel.app" target="_blank" rel="noopener">Le site ACHIRA ↗</a>
       <span class="btn btn--line" aria-disabled="true">Instagram ACHIRA · bientôt</span>
     </div>
   </section>
@@ -1096,7 +1324,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
 <footer class="footer light" data-tone="light">
   <a class="footer__brand" href="#/" aria-label="AKARBI, accueil"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 717 296" fill="currentColor" fill-rule="evenodd"><path d="M676,1 L676,274 L673,277 L657,276 L657,295 L699,295 L703,292 L700,265 L699,210 L700,20 L716,16 L716,2Z M554,1 L553,293 L575,293 L653,214 L644,198 L601,145 L642,96 L649,83 L577,2Z M583,158 L632,215 L579,268 L577,168Z M581,31 L622,80 L625,89 L583,139 L578,142 L576,96 L579,32Z M149,1 L147,292 L173,293 L175,291 L172,179 L178,152 L181,150 L227,293 L254,293 L255,288 L230,222 L202,137 L193,117 L207,78 L241,2 L228,1 L180,114 L177,126 L173,130 L171,121 L176,1Z M433,1 L430,292 L456,292 L456,178 L464,166 L469,163 L482,209 L484,226 L500,292 L502,294 L529,293 L489,140 L489,133 L523,92 L523,87 L454,0Z M459,29 L493,71 L506,91 L457,155 L456,72 L457,30Z M335,0 L328,27 L309,148 L282,292 L315,293 L317,291 L317,278 L298,276 L297,270 L328,100 L334,83 L364,225 L375,292 L401,293 L403,292 L403,286 L364,104 L348,17 L343,1Z M53,0 L48,11 L12,232 L0,291 L1,293 L34,292 L34,278 L17,276 L15,271 L48,86 L51,83 L83,232 L93,292 L121,293 L68,31 L61,3 L58,0Z"/></svg></a>
   <nav class="footer__links" aria-label="Liens du pied de page">
-    <a href="#/produits">Produits</a><a href="#/achira">ACHIRA</a><a href="#/univers">Univers AKARBI</a><span>Contact · bientôt</span><span>Instagram · bientôt</span>
+    <a href="#/produits">Produits</a><a href="#/heritage">Héritage</a><a href="#/achira">ACHIRA</a><a href="#/univers">Univers AKARBI</a><span>Contact · bientôt</span><span>Instagram · bientôt</span>
   </nav>
   <p class="footer__motto">Trust your way</p>
   <div class="footer__legal">
@@ -1130,8 +1358,8 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     <div class="cart__list" data-cart-list></div>
     <div class="cart__foot">
       <div class="cart__total"><span>Total</span><span data-cart-total>0 €</span></div>
-      <span class="btn btn--solid" aria-disabled="true" style="background:var(--ink);color:var(--ivory)">Commander</span>
-      <p class="note">Le paiement en ligne ouvre bientôt. Ton panier reste enregistré sur cet appareil.</p>
+      <button type="button" class="btn btn--solid" style="background:var(--ink);color:var(--ivory)" data-commander>Commander</button>
+      <p class="note" data-commander-note>Le paiement en ligne ouvre bientôt. Ton panier reste enregistré sur cet appareil.</p>
     </div>
   </div>
 </aside>
@@ -1156,45 +1384,224 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
   };
 
   /* ================= Produits ================= */
+  // Les produits viennent du dashboard (/admin) via /api/catalogue.
+  // Ceux-ci ne servent que si le catalogue ne répond pas.
+  const INFOS_PAR_DEFAUT = [
+    { titre: 'Matière et entretien', texte: 'Cuir embossé grain croco. La composition, la doublure et les conseils d’entretien seront précisés à l’ouverture de la boutique.' },
+    { titre: 'Guide des tailles', texte: 'Coupe ample, épaules légèrement tombantes. Le guide des mesures sera publié à l’ouverture de la boutique.' },
+    { titre: 'Livraison et retours', texte: 'Les conditions de livraison et de retour seront publiées à l’ouverture de la boutique.' },
+  ];
+  const SECOURS = { cat: 'Vestes', coll: 'Chapter 01 — Première trace', mad: null, infos: INFOS_PAR_DEFAUT, sizes: ['S', 'M', 'L', 'XL'], desc: '', note: 'Tailles et disponibilités définitives à l’ouverture de la boutique.', tag: 'Nouveauté', homme: true, femme: true };
   const PRODUCTS = {
     petrole: {
-      id: 'petrole', name: 'Veste Signature', color: 'Pétrole', price: 320, swatch: '#12281f',
+      ...SECOURS, cardName: 'Veste Signature en cuir embossé', o: 10, of: 20, id: 'petrole', name: 'Veste Signature', color: 'Pétrole', eur: 320, swatch: '#12281f',
       face: 'img/p-petrole-face.webp', back: 'img/p-petrole-dos.webp',
-      views: { face: 'img/p-petrole-face-cut.webp', profil: 'img/p-petrole-profil-cut.webp', dos: 'img/p-petrole-dos-cut.webp' },
       alt: 'Veste Signature vert pétrole',
       alts: ['Veste Signature vert pétrole, vue de face', 'Veste Signature vert pétrole, vue de dos avec la signature « 111 »', 'La veste vert pétrole suspendue dans la fumée', 'Détail de l’épaule et de l’empiècement bordeaux', 'Détail du monogramme AK en métal, côté cœur', 'Un homme de dos portant la veste vert pétrole'],
       gallery: ['img/p-petrole-face.webp', 'img/p-petrole-dos.webp', 'img/d-flottante.webp', 'img/d-epaule.webp', 'img/d-logo.webp', 'img/portrait-homme.webp'],
       details: ['Cuir vert pétrole, embossé grain croco', 'Empiècements bordeaux aux épaules, devant et dos', 'Panneau courbe et col montant', 'Zip central et boutons pression argentés', 'Monogramme AKARBI en métal, côté cœur', 'Signature « 111 » au dos, sous l’encolure'],
     },
     ivoire: {
-      id: 'ivoire', name: 'Veste Signature', color: 'Ivoire & Bordeaux', price: 320, swatch: 'linear-gradient(180deg,#eee5d3 50%,#5a1020 50%)',
+      ...SECOURS, cardName: 'Veste Signature en cuir embossé', o: 20, of: 10, id: 'ivoire', name: 'Veste Signature', color: 'Ivoire & Bordeaux', eur: 320, swatch: 'linear-gradient(180deg,#eee5d3 50%,#5a1020 50%)',
       face: 'img/p-ivoire-face.webp', back: 'img/p-ivoire-dos.webp',
-      views: { face: 'img/p-ivoire-face-cut.webp', profil: 'img/p-ivoire-profil-cut.webp', dos: 'img/p-ivoire-dos-cut.webp' },
       alt: 'Veste Signature ivoire et bordeaux',
       alts: ['Veste Signature ivoire et bordeaux, vue de face', 'Veste Signature ivoire et bordeaux, vue de dos', 'Une femme portant la veste ivoire et bordeaux'],
       gallery: ['img/p-ivoire-face.webp', 'img/p-ivoire-dos.webp', 'img/portrait-femme.webp'],
       details: ['Panneau ivoire courbe sur corps bordeaux, embossé grain croco', 'Empiècements vert pétrole aux épaules, devant et dos', 'Col montant', 'Zip central et boutons pression dorés', 'Monogramme AKARBI doré, côté cœur', 'Signature « 111 » dorée au dos, sous l’encolure'],
     },
   };
-  const euro = (n) => n.toLocaleString('fr-FR') + ' €';
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const montant = (n, devise) => (n == null ? '' : n.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) + (devise === 'eur' ? '\u00a0€' : '\u00a0MAD'));
+  const prix = (eur, mad) => [montant(eur, 'eur'), montant(mad, 'mad')].filter(Boolean).join(' · ');
+  // les produits du même nom sont les coloris d'une même pièce
+  const coloris = (p) => Object.values(PRODUCTS).filter((x) => x.name === p.name);
 
-  const ORDER = { homme: ['petrole', 'ivoire'], femme: ['ivoire', 'petrole'] };
+  /* ================= Compte client ================= */
+  const COMPTE = { connecte: false, prenom: '', favoris: [] };
+  const versConnexion = (suite) => { window.top.location.href = '/compte/connexion?suite=' + encodeURIComponent(suite); };
+  async function chargerCompte() {
+    try {
+      const r = await fetch('/api/compte/etat', { credentials: 'same-origin' });
+      if (r.ok) Object.assign(COMPTE, await r.json());
+    } catch (e) { /* compte indisponible : le site reste utilisable */ }
+    const nom = $('[data-compte-nom]');
+    if (nom) nom.textContent = COMPTE.connecte ? COMPTE.prenom : '';
+    const lien = $('[data-compte]');
+    if (lien) lien.setAttribute('aria-label', COMPTE.connecte ? 'Mon compte' : 'Se connecter ou créer un compte');
+    const note = $('[data-commander-note]');
+    if (note && !COMPTE.connecte) note.textContent = 'Un compte est nécessaire pour commander. Le paiement en ligne ouvre bientôt.';
+  }
+  document.addEventListener('click', async (e) => {
+    const fav = e.target.closest('[data-fav]');
+    if (fav) {
+      const id = fav.dataset.fav;
+      if (!COMPTE.connecte) { versConnexion('/akarbi/index.html#/produit/' + id); return; }
+      const actif = fav.getAttribute('aria-pressed') !== 'true';
+      fav.setAttribute('aria-pressed', actif);
+      fav.querySelector('span').textContent = actif ? 'Dans tes favoris' : 'Ajouter aux favoris';
+      const r = await fetch('/api/compte/favoris', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ produit: id, actif }) }).catch(() => null);
+      if (r && r.ok) { COMPTE.favoris = actif ? [...COMPTE.favoris, id] : COMPTE.favoris.filter((x) => x !== id); toast(actif ? 'Ajouté à tes favoris.' : 'Retiré de tes favoris.'); }
+      else { fav.setAttribute('aria-pressed', !actif); fav.querySelector('span').textContent = !actif ? 'Dans tes favoris' : 'Ajouter aux favoris'; toast('Impossible pour le moment. Réessaie.'); }
+      return;
+    }
+    if (e.target.closest('[data-commander]')) {
+      if (!cart.items.length) { toast('Ton panier est vide.'); return; }
+      if (!COMPTE.connecte) { versConnexion('/akarbi/index.html#/produits'); return; }
+      toast('Le paiement en ligne ouvre très bientôt. Ton panier est gardé.');
+    }
+  });
+
+  async function chargerCatalogue() {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 3000);
+    try {
+      const r = await fetch('/api/catalogue', { signal: ctrl.signal });
+      if (!r.ok) return;
+      const data = await r.json();
+      if (Array.isArray(data.produits) && data.produits.length) {
+        Object.keys(PRODUCTS).forEach((k) => delete PRODUCTS[k]);
+        data.produits.forEach((p) => { PRODUCTS[p.id] = p; });
+      }
+      if (Array.isArray(data.heritage)) HERITAGE.splice(0, HERITAGE.length, ...data.heritage);
+      if (Array.isArray(data.familles)) FAMILLES_HE.splice(0, FAMILLES_HE.length, ...data.familles);
+      if (data.pageHeritage) Object.assign(PAGE_HE, data.pageHeritage);
+      if (Array.isArray(data.signature) && data.signature.length === 3) {
+        const trio = $('[data-signature]');
+        if (trio) trio.innerHTML = data.signature.map((s) => `<figure data-reveal><img src="${esc(s.image)}" alt="${esc(s.alt)}" loading="lazy"><figcaption><h3 class="h4">${esc(s.titre)}</h3><p class="body">${esc(s.texte)}</p></figcaption></figure>`).join('');
+      }
+    } catch (e) {
+      /* catalogue indisponible : on garde les produits de secours */
+    } finally {
+      clearTimeout(t);
+    }
+  }
+
+
+  /* ================= Produits : tri et filtres ================= */
+  // Les options sont calculées à partir des pièces de l'onglet : un filtre qui n'aurait qu'un seul choix n'est pas proposé.
+  const TRI = { ordre: 'maison', cat: '', coloris: [], taille: '', herit: '' };
+  const ORDRE_TAILLES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', 'Taille unique'];
+  const valeur = (p) => p.eur ?? (p.mad != null ? p.mad / 10.8 : Infinity);
+  const garde = (p, sauf) =>
+    (sauf === 'cat' || !TRI.cat || p.cat === TRI.cat) &&
+    (sauf === 'coloris' || !TRI.coloris.length || TRI.coloris.includes(p.color)) &&
+    (sauf === 'taille' || !TRI.taille || (p.sizes || []).includes(TRI.taille)) &&
+    (sauf === 'herit' || !TRI.herit || (p.heritage || []).includes(TRI.herit));
+  function trier(base) {
+    // les choix qui n'existent plus dans cet onglet sont oubliés
+    if (!base.some((p) => p.cat === TRI.cat)) TRI.cat = '';
+    TRI.coloris = TRI.coloris.filter((c) => base.some((p) => p.color === c));
+    if (!base.some((p) => (p.sizes || []).includes(TRI.taille))) TRI.taille = '';
+    if (!selection(TRI.herit) || !base.some((p) => (p.heritage || []).includes(TRI.herit))) TRI.herit = '';
+    renderTri(base);
+    const res = base.filter((p) => garde(p));
+    if (TRI.ordre === 'prix-asc') res.sort((a, b) => valeur(a) - valeur(b));
+    if (TRI.ordre === 'prix-desc') res.sort((a, b) => valeur(b) - valeur(a));
+    return res;
+  }
+  function renderTri(base) {
+    const box = $('[data-tri]');
+    if (!box) return;
+    const compte = (f, sauf) => base.filter((p) => garde(p, sauf) && f(p)).length;
+    const opt = (attr, val, actif, texte, n, extra = '') => `<button type="button" class="pr-opt${extra ? ' pr-opt--teinte' : ''}" ${attr}="${esc(val)}" aria-pressed="${actif}">${extra}<span>${texte}</span>${n != null ? `<small>${n}</small>` : ''}</button>`;
+    const cats = [...new Set(base.map((p) => p.cat).filter(Boolean))];
+    const teintes = [...new Map(base.filter((p) => p.color).map((p) => [p.color, p.swatch])).entries()];
+    const tailles = [...new Set(base.flatMap((p) => p.sizes || []))].sort((a, b) => {
+      const ia = ORDRE_TAILLES.indexOf(a), ib = ORDRE_TAILLES.indexOf(b);
+      return ia >= 0 && ib >= 0 ? ia - ib : ia >= 0 ? -1 : ib >= 0 ? 1 : a.localeCompare(b, 'fr', { numeric: true });
+    });
+    const herits = [...new Set(base.flatMap((p) => p.heritage || []))].map(selection).filter(Boolean);
+    const prixDispo = base.filter((p) => valeur(p) !== Infinity).length > 1;
+    const n = base.filter((p) => garde(p)).length;
+    const actifs = (TRI.cat ? 1 : 0) + TRI.coloris.length + (TRI.taille ? 1 : 0) + (TRI.herit ? 1 : 0);
+    box.innerHTML = `
+      <p class="pr-res" aria-live="polite">${n} pièce${n > 1 ? 's' : ''}</p>
+      ${prixDispo ? `<div class="pr-groupe" role="group" aria-label="Trier"><p>Trier</p>
+        ${opt('data-tri-ordre', 'maison', TRI.ordre === 'maison', 'Sélection de la maison')}
+        ${opt('data-tri-ordre', 'prix-asc', TRI.ordre === 'prix-asc', 'Prix croissant')}
+        ${opt('data-tri-ordre', 'prix-desc', TRI.ordre === 'prix-desc', 'Prix décroissant')}
+      </div>` : ''}
+      ${cats.length > 1 ? `<div class="pr-groupe" role="group" aria-label="Catégories"><p>Catégories</p>
+        ${opt('data-tri-cat', '', !TRI.cat, 'Tout', compte(() => true, 'cat'))}
+        ${cats.map((c) => opt('data-tri-cat', c, TRI.cat === c, esc(c), compte((p) => p.cat === c, 'cat'))).join('')}
+      </div>` : ''}
+      ${teintes.length > 1 ? `<div class="pr-groupe" role="group" aria-label="Coloris"><p>Coloris</p>
+        ${teintes.map(([c, sw]) => opt('data-tri-coloris', c, TRI.coloris.includes(c), esc(c), compte((p) => p.color === c, 'coloris'), `<i style="background:${esc(sw)}" aria-hidden="true"></i>`)).join('')}
+      </div>` : ''}
+      ${tailles.length > 1 ? `<div class="pr-groupe" role="group" aria-label="Taille"><p>Taille</p><div class="pr-tailles">
+        ${tailles.map((t) => `<button type="button" class="pr-taille" data-tri-taille="${esc(t)}" aria-pressed="${TRI.taille === t}">${esc(t)}</button>`).join('')}
+      </div></div>` : ''}
+      ${herits.length ? `<div class="pr-groupe" role="group" aria-label="Héritage"><p>Héritage</p>
+        ${herits.map((h) => opt('data-tri-herit', h.id, TRI.herit === h.id, esc(h.titre), compte((p) => (p.heritage || []).includes(h.id), 'herit'))).join('')}
+      </div>` : ''}
+      ${actifs ? '<button type="button" class="pr-reset" data-tri-reset>Effacer les filtres</button>' : ''}`;
+    const c = $('[data-tri-compte]');
+    if (c) c.textContent = actifs ? `· ${actifs}` : '';
+  }
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-tri-ordre], [data-tri-cat], [data-tri-coloris], [data-tri-taille], [data-tri-herit], [data-tri-reset]');
+    if (!b) return;
+    const d = b.dataset;
+    if ('triOrdre' in d) TRI.ordre = d.triOrdre;
+    else if ('triCat' in d) TRI.cat = d.triCat;
+    else if ('triColoris' in d) TRI.coloris = TRI.coloris.includes(d.triColoris) ? TRI.coloris.filter((x) => x !== d.triColoris) : [...TRI.coloris, d.triColoris];
+    else if ('triTaille' in d) TRI.taille = TRI.taille === d.triTaille ? '' : d.triTaille;
+    else if ('triHerit' in d) TRI.herit = TRI.herit === d.triHerit ? '' : d.triHerit;
+    else Object.assign(TRI, { cat: '', coloris: [], taille: '', herit: '' });
+    const grid = $('[data-products][data-filtrable]');
+    const cle = Object.keys(d)[0];
+    renderGrid(grid, grid.dataset.tab || 'homme');
+    // le focus reste sur le choix qui vient d'être fait
+    const meme = cle && cle !== 'triReset' && $(`[data-tri] [data-${cle.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase())}="${CSS.escape(d[cle])}"]`);
+    if (meme) meme.focus();
+    if (window.ScrollTrigger) ScrollTrigger.refresh();
+  });
+  // ordinateur : la barre est toujours ouverte ; téléphone : repliée derrière « Trier et filtrer »
+  const ecranLarge = window.matchMedia('(min-width: 901px)');
+  const ouvrirTri = () => { const d = $('[data-tri-details]'); if (d && ecranLarge.matches) d.open = true; };
+  ouvrirTri();
+  ecranLarge.addEventListener('change', ouvrirTri);
+
   function cardHTML(p) {
+    const cl = coloris(p);
     return `<article class="pcard" data-reveal>
-      <a class="pcard__media" href="#/produit/${p.id}" tabindex="-1" aria-hidden="true">
-        <span class="pcard__tag">Nouveauté</span>
-        <img src="${p.face}" alt="" loading="lazy">
-        <img src="${p.back}" alt="" loading="lazy">
+      <a class="pcard__media" href="#/produit/${esc(p.id)}" tabindex="-1" aria-hidden="true">
+        ${p.tag ? `<span class="pcard__tag">${esc(p.tag)}</span>` : ''}
+        ${p.face ? `<img src="${esc(p.face)}" alt="" loading="lazy">` : ''}
+        ${p.back && p.back !== p.face ? `<img src="${esc(p.back)}" alt="" loading="lazy">` : ''}
       </a>
-      <h3 class="pcard__name"><a href="#/produit/${p.id}">${p.name} en cuir embossé — ${p.color}</a></h3>
-      <p class="pcard__price">${euro(p.price)}</p>
-      <p class="pcard__colors">${Object.values(PRODUCTS).map((x) => `<i style="background:${x.swatch}" title="${x.color}"></i>`).join('')}<span>2 coloris</span></p>
+      <h3 class="pcard__name"><a href="#/produit/${esc(p.id)}">${esc(p.cardName || p.name)}${p.color ? ` — ${esc(p.color)}` : ''}</a></h3>
+      <p class="pcard__price">${esc(prix(p.eur, p.mad))}</p>
+      ${cl.length > 1 ? `<p class="pcard__colors">${cl.map((x) => `<i style="background:${esc(x.swatch)}" title="${esc(x.color)}"></i>`).join('')}<span>${cl.length} coloris</span></p>` : ''}
     </article>`;
   }
   function renderGrid(grid, tab) {
-    grid.innerHTML = ORDER[tab].map((id) => cardHTML(PRODUCTS[id])).join('');
+    const cle = tab === 'femme' ? 'of' : 'o';
+    const liste = Object.values(PRODUCTS).filter((p) => p[tab] !== false).sort((a, b) => (a[cle] ?? 0) - (b[cle] ?? 0));
+    if (grid.hasAttribute('data-filtrable')) {
+      const res = trier(liste);
+      grid.innerHTML = res.length ? res.map(cardHTML).join('') : '<div class="pr-vide"><p>Aucune pièce ne correspond à ces choix.</p><button type="button" class="pr-reset" data-tri-reset>Tout afficher</button></div>';
+      grid.dataset.tab = tab;
+      return;
+    }
+    const cats = [...new Set(liste.map((p) => p.cat).filter(Boolean))];
+    let cat = grid.dataset.cat || '';
+    if (!cats.includes(cat)) cat = '';
+    const filtres = cats.length > 1
+      ? `<div class="cats" role="group" aria-label="Catégories">${['', ...cats].map((c) => `<button type="button" data-cat="${esc(c)}" aria-pressed="${c === cat}">${c ? esc(c) : 'Tout'}</button>`).join('')}</div>`
+      : '';
+    grid.innerHTML = filtres + liste.filter((p) => !cat || p.cat === cat).map(cardHTML).join('');
     grid.dataset.tab = tab;
+    grid.dataset.cat = cat;
   }
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('.cats [data-cat]');
+    if (!b) return;
+    const grid = b.closest('[data-products]');
+    grid.dataset.cat = b.dataset.cat;
+    renderGrid(grid, grid.dataset.tab);
+    if (window.ScrollTrigger) ScrollTrigger.refresh();
+  });
   function renderCards() {
     $$('[data-products]').forEach((el) => renderGrid(el, 'homme'));
     $$('[data-tabs] [data-tab]').forEach((b) => { b.tabIndex = b.getAttribute('aria-selected') === 'true' ? 0 : -1; });
@@ -1226,29 +1633,235 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
   });
 
   function renderProduct(id) {
-    const p = PRODUCTS[id] || PRODUCTS.petrole;
-    const other = Object.values(PRODUCTS).filter((x) => x.id !== p.id);
+    const p = PRODUCTS[id] || Object.values(PRODUCTS)[0];
+    const cl = coloris(p);
+    const autres = Object.values(PRODUCTS).filter((x) => x.id !== p.id && x.name !== p.name);
+    const suggestions = [...autres.filter((x) => x.cat && x.cat === p.cat), ...autres.filter((x) => !x.cat || x.cat !== p.cat), ...cl.filter((x) => x.id !== p.id)].slice(0, 3);
+    const principal = p.eur != null ? montant(p.eur, 'eur') : montant(p.mad, 'mad');
+    const second = p.eur != null && p.mad != null ? montant(p.mad, 'mad') : '';
+    const sizes = p.sizes || [];
+    const infos = (p.infos || []).filter((r) => r.titre && r.texte);
+    const herit = (p.heritage || []).map(selection).filter(Boolean);
     $('[data-prod]').innerHTML = `
-      <div class="prod__gallery">${p.gallery.map((src, i) => `<img src="${src}" alt="${(p.alts && p.alts[i]) || p.alt}" ${i > 1 ? 'loading="lazy"' : ''} data-reveal>`).join('')}</div>
+      <div class="prod__gallery">${(p.gallery || []).map((src, i) => `<img src="${esc(src)}" alt="${esc((p.alts && p.alts[i]) || p.alt)}" ${i > 1 ? 'loading="lazy"' : ''} data-reveal>`).join('')}</div>
       <div class="prod__panel">
-        <p class="eyebrow">Chapter 01 — Première trace</p>
-        <div><h1 class="prod__title">${p.name}</h1><p class="prod__color">${p.color}</p></div>
-        <p class="prod__price">${euro(p.price)}</p>
-        <div class="opt"><span class="opt__label">Coloris</span><div class="swatches">${Object.values(PRODUCTS).map((x) => `<a class="swatch" href="#/produit/${x.id}" aria-current="${x.id === p.id}"><i style="background:${x.swatch}"></i>${x.color}</a>`).join('')}</div></div>
-        <div class="opt"><span class="opt__label" id="lbl-size">Taille</span><div class="sizes" role="radiogroup" aria-labelledby="lbl-size">${['S', 'M', 'L', 'XL'].map((s) => `<button type="button" class="size" role="radio" aria-checked="false" data-size="${s}">${s}</button>`).join('')}</div></div>
-        <button type="button" class="btn btn--solid prod__add" data-add="${p.id}">Ajouter au panier</button>
-        <p class="note">Tailles et disponibilités définitives à l’ouverture de la boutique.</p>
-        <div class="acc">
-          <details open><summary>Détails</summary><div class="acc__in"><ul>${p.details.map((d) => `<li>${d}</li>`).join('')}</ul></div></details>
-          <details><summary>Matière et entretien</summary><div class="acc__in"><p>Cuir embossé grain croco. La composition, la doublure et les conseils d’entretien seront précisés à l’ouverture de la boutique.</p></div></details>
-          <details><summary>Guide des tailles</summary><div class="acc__in"><p>Coupe ample, épaules légèrement tombantes. Le guide des mesures sera publié à l’ouverture de la boutique.</p></div></details>
-          <details><summary>Livraison et retours</summary><div class="acc__in"><p>Les conditions de livraison et de retour seront publiées à l’ouverture de la boutique.</p></div></details>
-        </div>
+        ${p.coll ? `<p class="eyebrow">${esc(p.coll)}</p>` : ''}
+        <div><h1 class="prod__title">${esc(p.name)}</h1>${p.color ? `<p class="prod__color">${esc(p.color)}</p>` : ''}</div>
+        ${principal ? `<p class="prod__price">${esc(principal)}${second ? `<small>${esc(second)}</small>` : ''}</p>` : ''}
+        ${p.desc ? `<p class="prod__desc">${esc(p.desc)}</p>` : ''}
+        ${cl.length > 1 ? `<div class="opt"><span class="opt__label">Coloris</span><div class="swatches">${cl.map((x) => `<a class="swatch" href="#/produit/${esc(x.id)}" aria-current="${x.id === p.id}"><i style="background:${esc(x.swatch)}"></i>${esc(x.color)}</a>`).join('')}</div></div>` : ''}
+        ${sizes.length ? `<div class="opt"><span class="opt__label" id="lbl-size">Taille</span><div class="sizes" role="radiogroup" aria-labelledby="lbl-size">${sizes.map((s) => `<button type="button" class="size" role="radio" aria-checked="${sizes.length === 1}" data-size="${esc(s)}">${esc(s)}</button>`).join('')}</div></div>` : ''}
+        <button type="button" class="btn btn--solid prod__add" data-add="${esc(p.id)}">Ajouter au panier</button>
+        <button type="button" class="prod__fav" data-fav="${esc(p.id)}" aria-pressed="${COMPTE.favoris.includes(p.id)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg><span>${COMPTE.favoris.includes(p.id) ? 'Dans tes favoris' : 'Ajouter aux favoris'}</span></button>
+        ${p.note ? `<p class="note">${esc(p.note)}</p>` : ''}
+        ${(p.details || []).length || infos.length ? `<div class="acc">
+          ${(p.details || []).length ? `<details open><summary>Détails</summary><div class="acc__in"><ul>${p.details.map((d) => `<li>${esc(d)}</li>`).join('')}</ul></div></details>` : ''}
+          ${infos.map((r) => `<details><summary>${esc(r.titre)}</summary><div class="acc__in"><p>${esc(r.texte)}</p></div></details>`).join('\n          ')}
+        </div>` : ''}
+        ${herit.map((s) => `<a class="prod__herit" href="#/heritage/${esc(s.id)}">${s.photos[0] ? `<img src="${esc(s.photos[0].url)}" alt="" loading="lazy">` : '<span></span>'}<span><small>Inspirée de · ${esc(s.familleNom)}</small><b>${esc(s.titre)}</b></span></a>`).join('')}
         <a class="prod__achira" href="#/achira"><span>${ACHIRA_SVG}</span><span>Cette pièce fait de toi un membre d’<b>ACHIRA</b>, le cercle AKARBI.</span></a>
       </div>`;
-    $('[data-other]').innerHTML = other.map(cardHTML).join('');
+    $('[data-other]').innerHTML = suggestions.map(cardHTML).join('');
+    $('[data-other]').closest('section').hidden = !suggestions.length;
   }
   const ACHIRA_SVG = $('#achiraTpl').innerHTML;
+
+  /* ================= Héritage ================= */
+  // Sélections publiées depuis le dashboard (/admin/heritage), triées par famille puis par ordre.
+  // Elles ne dépendent pas des produits : c'est un produit qui indique de quelles sélections il s'inspire.
+  const HERITAGE = [];
+  const MONO_SVG = $('.nav__mono').innerHTML;
+  const selection = (id) => HERITAGE.find((s) => s.id === id);
+  const paragraphes = (t) => String(t || '').split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean).map((x) => esc(x).replace(/\n/g, '<br>'));
+
+  function heritageCard(s) {
+    const ph = s.photos[0];
+    const meta = [s.lieu, s.epoque].filter(Boolean).join(' · ');
+    return `<article class="hcard" data-reveal>
+      <a class="hcard__media" href="#/heritage/${esc(s.id)}" tabindex="-1" aria-hidden="true">${ph ? `<img src="${esc(ph.url)}" alt="" loading="lazy">` : ''}</a>
+      <p class="eyebrow">${esc(s.theme || s.familleNom)}</p>
+      <h3 class="h4"><a href="#/heritage/${esc(s.id)}">${esc(s.titre)}</a></h3>
+      ${meta ? `<p class="hcard__meta">${esc(meta)}</p>` : ''}
+    </article>`;
+  }
+
+  // Page Héritage : en-tête, schéma des 8 familles (barre latérale) et grille décalée
+  const FAMILLES_HE = [];
+  const PAGE_HE = {};
+  const FORMATS_HE = { portrait: '4 / 5', haut: '2 / 3', carre: '1 / 1', paysage: '4 / 3' };
+  const RYTHME_HE = ['4 / 5', '1 / 1', '2 / 3', '3 / 4', '4 / 3', '4 / 5'];
+  const hxCols = (w) => (w >= 900 ? 3 : w >= 520 ? 2 : 1);
+  let hxFiltre = '';
+  let hxSpy = null;
+
+  function hxCard(s, i) {
+    const ph = s.photos[0];
+    const ratio = FORMATS_HE[s.format] || (s.une ? '2 / 3' : RYTHME_HE[i % RYTHME_HE.length]);
+    const meta = [s.lieu, s.epoque].filter(Boolean).join(' · ');
+    return `<article class="hx-card" data-reveal data-hx-sel="${esc(s.id)}">
+      <a class="hx-card__media" href="#/heritage/${esc(s.id)}" tabindex="-1" aria-hidden="true" style="aspect-ratio:${ratio}">${ph ? `<img src="${esc(ph.url)}" alt="" loading="lazy">` : ''}</a>
+      <p class="hx-card__fam"><b>${esc(s.num)}</b>${esc(s.theme || s.familleNom)}</p>
+      <h3 class="hx-card__titre"><a href="#/heritage/${esc(s.id)}">${esc(s.titre)}</a></h3>
+      ${s.accroche ? `<p class="hx-card__acc">${esc(s.accroche)}</p>` : ''}
+      <p class="hx-card__pied"><span>${esc(meta)}</span><span class="hx-card__cta">Découvrir <span aria-hidden="true">→</span></span></p>
+    </article>`;
+  }
+
+  function renderHxSide() {
+    const fams = FAMILLES_HE.length ? FAMILLES_HE : [...new Map(HERITAGE.map((s) => [s.famille, { id: s.famille, nom: s.familleNom, num: s.num }])).values()];
+    $('[data-hx-side]').innerHTML = `<p class="eyebrow">Le schéma</p>
+      <button type="button" class="hx-tout" data-hx-famille="" aria-pressed="${!hxFiltre}">Tout voir <span>${HERITAGE.length}</span></button>
+      <ol class="hx-arbre">${fams.map((f) => {
+        const sels = HERITAGE.filter((s) => s.famille === f.id);
+        if (!sels.length) return `<li class="hx-fam is-vide"><span class="hx-fam__btn"><b>${esc(f.num)}</b><span>${esc(f.nom)}</span><i>Bientôt</i></span></li>`;
+        return `<li class="hx-fam${hxFiltre === f.id ? ' is-ouverte' : ''}" data-hx-fam="${esc(f.id)}">
+          <button type="button" class="hx-fam__btn" data-hx-famille="${esc(f.id)}" aria-pressed="${hxFiltre === f.id}"><b>${esc(f.num)}</b><span>${esc(f.nom)}</span><i>${sels.length}</i></button>
+          <ul class="hx-sels">${sels.map((s) => `<li><a href="#/heritage/${esc(s.id)}" data-hx-lien="${esc(s.id)}">${esc(s.titre)}</a></li>`).join('')}</ul>
+        </li>`;
+      }).join('')}</ol>`;
+  }
+
+  // colonnes remplies tour à tour : l'ordre de lecture reste de gauche à droite
+  function renderHxFeed() {
+    const feed = $('[data-hx-feed]');
+    const liste = HERITAGE.filter((s) => !hxFiltre || s.famille === hxFiltre);
+    const ordre = [...liste.filter((s) => s.une), ...liste.filter((s) => !s.une)];
+    if (hxSpy) { hxSpy.disconnect(); hxSpy = null; }
+    if (!ordre.length) { feed.innerHTML = '<p class="hx-vide">Les premières sélections arrivent bientôt.</p>'; delete feed.dataset.cols; return; }
+    const n = hxCols(feed.clientWidth || window.innerWidth);
+    const cols = Array.from({ length: n }, () => []);
+    ordre.forEach((s, i) => cols[i % n].push(hxCard(s, i)));
+    feed.style.setProperty('--hx-cols', n);
+    feed.dataset.cols = n;
+    feed.innerHTML = cols.map((c) => `<div class="hx-col">${c.join('')}</div>`).join('');
+    // la barre latérale suit la sélection en cours de lecture
+    if ('IntersectionObserver' in window) {
+      hxSpy = new IntersectionObserver((entries) => {
+        const vu = entries.filter((e) => e.isIntersecting).sort((x, y) => x.boundingClientRect.top - y.boundingClientRect.top)[0];
+        if (vu) activerHx(vu.target.dataset.hxSel);
+      }, { rootMargin: '-35% 0px -55% 0px' });
+      $$('[data-hx-sel]', feed).forEach((c) => hxSpy.observe(c));
+    }
+  }
+
+  function activerHx(id) {
+    const side = $('[data-hx-side]');
+    const s = selection(id);
+    if (!s) return;
+    $$('[data-hx-lien]', side).forEach((a) => a.setAttribute('aria-current', a.dataset.hxLien === id));
+    $$('.hx-fam', side).forEach((li) => li.classList.toggle('is-ouverte', li.dataset.hxFam === s.famille));
+    const cible = $(`[data-hx-lien="${CSS.escape(id)}"]`, side);
+    const btn = $(`.hx-fam__btn[data-hx-famille="${CSS.escape(s.famille)}"]`, side);
+    const rs = side.getBoundingClientRect();
+    if (side.scrollWidth > side.clientWidth + 4 && btn) {
+      const r = btn.getBoundingClientRect();
+      if (r.left < rs.left || r.right > rs.right) side.scrollTo({ left: side.scrollLeft + r.left - rs.left - 24, behavior: RM ? 'auto' : 'smooth' });
+    } else if (cible && side.scrollHeight > side.clientHeight + 4) {
+      const r = cible.getBoundingClientRect();
+      if (r.top < rs.top + 40 || r.bottom > rs.bottom - 40) side.scrollTo({ top: side.scrollTop + r.top - rs.top - rs.height / 2, behavior: RM ? 'auto' : 'smooth' });
+    }
+  }
+
+  function renderHeritage() {
+    const img = $('[data-hx-image]');
+    if (PAGE_HE.image && img.getAttribute('src') !== PAGE_HE.image) img.src = PAGE_HE.image;
+    if (PAGE_HE.image_alt != null) img.alt = PAGE_HE.image_alt;
+    if (PAGE_HE.surtitre != null) $('[data-hx-surtitre]').textContent = PAGE_HE.surtitre;
+    if (PAGE_HE.texte != null) $('[data-hx-texte]').textContent = PAGE_HE.texte;
+    const titre = $('[data-hx-titre]');
+    if (PAGE_HE.titre && titre.textContent.replace(/\s+/g, ' ').trim() !== PAGE_HE.titre) { titre.textContent = PAGE_HE.titre; delete titre.dataset.splitDone; }
+    const nf = new Set(HERITAGE.map((s) => s.famille)).size;
+    $('[data-hx-compte]').textContent = HERITAGE.length ? `${nf} famille${nf > 1 ? 's' : ''} · ${HERITAGE.length} sélection${HERITAGE.length > 1 ? 's' : ''}` : '';
+    if (!HERITAGE.some((s) => s.famille === hxFiltre)) hxFiltre = '';
+    renderHxSide();
+    renderHxFeed();
+  }
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-hx-famille]');
+    if (!b) return;
+    hxFiltre = hxFiltre === b.dataset.hxFamille ? '' : b.dataset.hxFamille;
+    renderHxSide();
+    renderHxFeed();
+    const haut = $('.hx').getBoundingClientRect().top + window.scrollY - 80;
+    if (window.scrollY > haut) gsap.to(window, { scrollTo: haut, duration: RM ? 0 : 0.9, ease: 'power2.inOut' });
+    const actif = $(`[data-hx-side] [data-hx-famille="${CSS.escape(hxFiltre)}"]`);
+    if (actif) actif.focus({ preventScroll: true });
+    if (window.ScrollTrigger) ScrollTrigger.refresh();
+  });
+  let hxAttente = 0;
+  window.addEventListener('resize', () => {
+    clearTimeout(hxAttente);
+    hxAttente = setTimeout(() => {
+      const feed = $('[data-hx-feed]');
+      if (!feed || feed.closest('.page').hidden || !feed.dataset.cols) return;
+      if (hxCols(feed.clientWidth) !== +feed.dataset.cols) { renderHxFeed(); if (window.ScrollTrigger) ScrollTrigger.refresh(); }
+    }, 150);
+  });
+
+  function renderSelection(id) {
+    const s = selection(id);
+    const [couv, ...galerie] = s.photos;
+    const meta = [s.lieu, s.epoque].filter(Boolean);
+    const reperes = [...(s.theme ? [{ titre: 'Thème', texte: s.theme }] : []), ...s.reperes];
+    const texte = paragraphes(s.texte);
+    const pieces = Object.values(PRODUCTS).filter((p) => (p.heritage || []).includes(s.id));
+    const autres = [...HERITAGE.filter((x) => x.id !== s.id && x.famille === s.famille), ...HERITAGE.filter((x) => x.famille !== s.famille)].slice(0, 3);
+    const i = HERITAGE.indexOf(s);
+    const prec = HERITAGE.length > 1 ? HERITAGE[(i - 1 + HERITAGE.length) % HERITAGE.length] : null;
+    const suiv = HERITAGE.length > 1 ? HERITAGE[(i + 1) % HERITAGE.length] : null;
+    const familles = [...new Map(HERITAGE.map((x) => [x.famille, x])).values()];
+    $('[data-selection]').innerHTML = `
+      <nav class="se-rail" aria-label="Sélections Héritage">
+        <a class="se-rail__tout" href="#/heritage"><i aria-hidden="true">←</i><span>Héritage</span></a>
+        ${familles.map((f) => `<p class="se-rail__fam"><b>${esc(f.num)}</b><span>${esc(f.familleNom)}</span></p>
+          ${HERITAGE.filter((x) => x.famille === f.famille).map((x) => `<a href="#/heritage/${esc(x.id)}"${x.id === s.id ? ' aria-current="page"' : ''}><i aria-hidden="true"></i><span>${esc(x.titre)}</span></a>`).join('')}`).join('')}
+      </nav>
+      <section class="pg-hero pg-hero--img se-hero" data-tone="dark"${couv ? '' : ' style="background:var(--p800)"'}>
+        ${couv ? `<img src="${esc(couv.url)}" alt="${esc(couv.alt)}">` : ''}
+        <div class="pg-hero__in">
+          <p class="eyebrow" data-reveal><a href="#/heritage">Héritage</a> · ${esc(s.num)} — ${esc(s.familleNom)}</p>
+          <h1 class="display" data-split>${esc(s.titre)}</h1>
+          ${s.accroche ? `<p class="lead" data-reveal style="max-width:34ch">${esc(s.accroche)}</p>` : ''}
+          ${meta.length ? `<ul class="se-meta" data-reveal>${meta.map((m) => `<li>${esc(m)}</li>`).join('')}</ul>` : ''}
+        </div>
+      </section>
+      ${texte.length || reperes.length ? `<section class="light paper-grain pad" data-tone="light">
+        <div class="se-recit"${reperes.length && texte.length ? '' : ' style="grid-template-columns:minmax(0,1fr)"'}>
+          ${reperes.length ? `<aside class="se-aside" data-reveal><p class="eyebrow">Repères</p><dl>${reperes.map((r) => `<div><dt>${esc(r.titre)}</dt><dd>${esc(r.texte)}</dd></div>`).join('')}</dl></aside>` : ''}
+          ${texte.length ? `<div class="se-texte">${texte.map((x) => `<p data-reveal>${x}</p>`).join('')}${s.credit ? `<p class="se-credit">${esc(s.credit)}</p>` : ''}</div>` : ''}
+        </div>
+      </section>` : ''}
+      ${galerie.length ? `<section class="pad" data-tone="dark" style="background:var(--p900)">
+        <p class="eyebrow" data-reveal style="margin-bottom:clamp(28px,4vh,44px)">En images</p>
+        <div class="se-galerie">${galerie.map((ph) => `<img src="${esc(ph.url)}" alt="${esc(ph.alt)}" loading="lazy" data-reveal>`).join('')}</div>
+        ${s.credit && !texte.length ? `<p class="se-credit" style="color:var(--iv60)">${esc(s.credit)}</p>` : ''}
+      </section>` : ''}
+      ${s.adn ? `<section class="h-achira pad band-cta se-adn" data-tone="dark">
+        <div style="width:72px;color:var(--ivory)" data-reveal>${MONO_SVG}</div>
+        <p class="eyebrow" data-reveal>Dans l’ADN AKARBI</p>
+        <p class="statement" data-words>${esc(s.adn)}</p>
+      </section>` : ''}
+      ${pieces.length ? `<section class="light paper-grain pad h-coll" data-tone="light">
+        <div style="display:grid;gap:18px;margin-bottom:clamp(40px,7vh,70px);justify-items:center;text-align:center">
+          <p class="eyebrow" data-reveal>Pièces inspirées</p>
+          <h2 class="h2" style="color:var(--ink)" data-split>De l’héritage à la pièce.</h2>
+        </div>
+        <div class="coll-grid">${pieces.map(cardHTML).join('')}</div>
+      </section>` : ''}
+      ${prec ? `<section class="light paper-grain" data-tone="light">
+        <nav class="se-suite" aria-label="Sélection précédente et suivante">
+          <a class="se-suite__lien" href="#/heritage/${esc(prec.id)}"><small>← Précédente</small><b>${esc(prec.titre)}</b><em>${esc(prec.familleNom)}</em></a>
+          <a class="se-suite__lien se-suite__lien--suiv" href="#/heritage/${esc(suiv.id)}"><small>Suivante →</small><b>${esc(suiv.titre)}</b><em>${esc(suiv.familleNom)}</em></a>
+        </nav>
+      </section>` : ''}
+      ${autres.length ? `<section class="pad he-liste" data-tone="dark">
+        <div class="row-cta" style="justify-content:space-between;margin-bottom:clamp(32px,5vh,56px)">
+          <div style="display:grid;gap:18px"><p class="eyebrow" data-reveal>Héritage</p><h2 class="h2" data-split>À découvrir aussi.</h2></div>
+          <a class="link" href="#/heritage" data-reveal>Toutes les sélections <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="he-grille">${autres.map((x) => heritageCard(x)).join('')}</div>
+      </section>` : ''}`;
+  }
 
   document.addEventListener('click', (e) => {
     const s = e.target.closest('.size');
@@ -1259,8 +1872,8 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     const add = e.target.closest('[data-add]');
     if (add) {
       const sel = $('.size[aria-checked="true"]');
-      if (!sel) { toast('Choisis ta taille pour continuer.'); $('.size').focus(); return; }
-      cart.add(add.dataset.add, sel.dataset.size);
+      if ($(".size") && !sel) { toast('Choisis ta taille pour continuer.'); $('.size').focus(); return; }
+      cart.add(add.dataset.add, sel ? sel.dataset.size : "");
       hideToast();
       openCart(add);
     }
@@ -1269,7 +1882,8 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
   /* ================= Panier ================= */
   const cart = {
     // un panier enregistré avec un produit inconnu ne doit jamais bloquer le site
-    items: (() => { const x = store.get('akarbi-panier', []); return Array.isArray(x) ? x.filter((i) => i && PRODUCTS[i.id] && Number.isFinite(i.qty) && i.qty > 0) : []; })(),
+    items: [],
+    charger() { const x = store.get('akarbi-panier', []); this.items = Array.isArray(x) ? x.filter((i) => i && PRODUCTS[i.id] && Number.isFinite(i.qty) && i.qty > 0) : []; },
     save() { store.set('akarbi-panier', this.items); renderCart(); },
     add(id, size) {
       const f = this.items.find((i) => i.id === id && i.size === size);
@@ -1287,12 +1901,13 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     } else {
       list.innerHTML = cart.items.map((i, k) => {
         const p = PRODUCTS[i.id];
-        return `<div class="cart__item"><img src="${p.face}" alt=""><div><b>${p.name} — ${p.color}</b><small>Taille ${i.size} · ${euro(p.price)}</small>
+        return `<div class="cart__item"><img src="${esc(p.face)}" alt=""><div><b>${esc(p.name)}${p.color ? ` — ${esc(p.color)}` : ''}</b><small>${i.size ? `Taille ${esc(i.size)} · ` : ''}${esc(prix(p.eur, p.mad))}</small>
           <div class="qty"><button type="button" data-q="${k}" data-d="-1" aria-label="Retirer une pièce">−</button><span>${i.qty}</span><button type="button" data-q="${k}" data-d="1" aria-label="Ajouter une pièce">+</button></div></div>
           <button type="button" class="cart__rm" data-rm="${k}">Retirer</button></div>`;
       }).join('');
     }
-    $('[data-cart-total]').textContent = euro(cart.items.reduce((a, i) => a + i.qty * PRODUCTS[i.id].price, 0));
+    const somme = (k) => { const l = cart.items.filter((i) => PRODUCTS[i.id][k] != null); return l.length ? l.reduce((a, i) => a + i.qty * PRODUCTS[i.id][k], 0) : null; };
+    $('[data-cart-total]').textContent = prix(somme('eur'), somme('mad')) || montant(0, 'eur');
     if (cartEl.classList.contains('open')) rack.render();
   }
   const cartEl = $('#cart');
@@ -1347,8 +1962,15 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
   // Pseudo-3D à partir de trois photos : face (0°), profil (90°), dos (180°), profil inversé (270°).
   // La vue change là où la veste est la plus « fine », ce qui masque le changement d'image.
   const VIEWS = ['face', 'profil', 'dos'];
+  // photos détourées face / profil / dos ; une pièce venue du catalogue sans ces photos garde sa face et son dos
+  const VUES_DETOUREES = {
+    petrole: { face: 'img/p-petrole-face-cut.webp', profil: 'img/p-petrole-profil-cut.webp', dos: 'img/p-petrole-dos-cut.webp' },
+    ivoire: { face: 'img/p-ivoire-face-cut.webp', profil: 'img/p-ivoire-profil-cut.webp', dos: 'img/p-ivoire-dos-cut.webp' },
+  };
+  const vuesDe = (p) => p.views || VUES_DETOUREES[p.id] || { face: p.face, profil: p.face, dos: p.back || p.face };
   function turnHTML(p) {
-    return `<span class="turn">${VIEWS.map((v) => `<img src="${p.views[v]}" alt="" draggable="false" data-v="${v}">`).join('')}</span>`;
+    const vues = vuesDe(p);
+    return `<span class="turn">${VIEWS.map((v) => `<img src="${esc(vues[v])}" alt="" draggable="false" data-v="${v}">`).join('')}</span>`;
   }
   function pose(turn, angle) {
     const a = ((angle % 360) + 360) % 360;
@@ -1385,7 +2007,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
       } else {
         track.innerHTML = list.map((it, i) => {
           const p = PRODUCTS[it.id];
-          return `<button type="button" class="hang" data-i="${i}" data-key="${it.id}-${it.size}" tabindex="-1" aria-label="${p.name} ${p.color}, taille ${it.size}">
+          return `<button type="button" class="hang" data-i="${i}" data-key="${it.id}-${it.size}" tabindex="-1" aria-label="${esc(p.name)}${p.color ? ` ${esc(p.color)}` : ''}, taille ${it.size}">
             <span class="hang__hook">${HANGER_SVG}</span>
             <span class="hang__body">${turnHTML(p)}</span>
             <span class="hang__tag">${it.size}${it.qty > 1 ? ` ×${it.qty}` : ''}</span>
@@ -1521,12 +2143,13 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
       turn = spin.firstElementChild;
       turn.setAttribute('role', 'img');
       turn.setAttribute('aria-label', `${p.alt}, qui tourne : face, profil et dos`);
-      const key = [p.details[0], p.details[1], p.details[4], p.details[5]].filter(Boolean);
+      const d = p.details || [];
+      const key = [d[0], d[1], d[4], d[5]].filter(Boolean);
       pins.innerHTML = key.map((d, i) => `<p class="viewer__pin" style="${PIN_AT[i]};transition-delay:${0.3 + i * 0.12}s"><b>${i + 1}</b><span>${d}</span></p>`).join('');
       panel.innerHTML = `
         <p class="eyebrow">Ta collection — Chapter 01</p>
         <div><h2 class="h3" id="viewer-title">${p.name}</h2><p class="viewer__meta">${p.color}</p></div>
-        <p class="viewer__price">${euro(p.price)}</p>
+        <p class="viewer__price">${esc(prix(p.eur, p.mad))}</p>
         <ul class="viewer__details">${key.map((d, i) => `<li><b>${i + 1}</b><span>${d}</span></li>`).join('')}</ul>
         <dl class="viewer__facts"><div><dt>Taille</dt><dd>${it.size}</dd></div><div><dt>Quantité</dt><dd>${it.qty}</dd></div></dl>
         <a class="link" href="#/produit/${p.id}" style="justify-self:start">Fiche complète <span>→</span></a>
@@ -1631,7 +2254,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     const name = v.dataset.vid;
     if (v._loading) return v._loading;
     v._loading = (async () => {
-      const url = v.dataset.src || `vid/${name}.webm`;   // vidéo remplacée depuis la dashboard, sinon celle du site
+      const url = `vid/${name}.webm`;
       v.preload = 'auto';
       if (v.currentSrc !== url) v.src = url;
       await new Promise((res) => {
@@ -1671,112 +2294,6 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
       if (Math.abs(v.currentTime - t) > 1 / 40) v.currentTime = t;
     }
   });
-
-  /* ================= Accueil : défilement texte par texte =================
-     Chaque geste (molette, glissé, flèches) fait jouer la vidéo jusqu'au texte suivant, puis la page attend
-     le geste suivant. Chaque section épinglée déclare les moments (temps de sa timeline) où un texte est lisible. */
-  let SL = null;                                   // sections de l'accueil : { st, times } ; null hors de l'accueil
-  const fullAt = (at, f, parts) => at + f * (1 + 0.3 * (parts.length - 1)) + 0.012;
-  function slideStops() {
-    const out = [];
-    for (const s of SL) {
-      const len = s.st.end - s.st.start, d = s.tl.duration();
-      const ys = s.times.map((t) => Math.round(s.st.start + len * Math.min(1, t / d))).sort((a, b) => a - b);
-      // le haut de la section n'est un arrêt que s'il montre déjà quelque chose (sinon on va droit au premier texte)
-      const first = ys[0] - s.st.start > len * 0.05 ? [Math.round(s.st.start)] : [];
-      out.push({ start: Math.round(s.st.start), end: Math.round(s.st.end), ys: [...first, ...ys] });
-    }
-    return out.sort((a, b) => a.start - b.start);
-  }
-  // prochain arrêt depuis y dans la direction dir ; null = défilement normal (sections de contenu)
-  function slideTarget(y, dir) {
-    const secs = slideStops(), H = window.innerHeight, near = H * 1.15;
-    if (dir > 0) {
-      const z = secs.find((s) => y >= s.start - 3 && y < s.end - 3);
-      if (z) {
-        const n = z.ys.find((v) => v > y + 3);
-        if (n !== undefined) return n;
-        const next = secs.find((s) => s.start > z.end - 3 && s.start - z.end <= near);   // section épinglée juste après : on enchaîne
-        return next ? next.ys[0] : z.end;
-      }
-      const next = secs.find((s) => s.start > y + 3 && s.start - y <= near);
-      return next ? next.ys[0] : null;
-    }
-    const z = secs.find((s) => y > s.start + 3 && y <= s.end + 3);
-    if (z) {
-      const p = [...z.ys].reverse().find((v) => v < y - 3);
-      if (p !== undefined && p > z.start + 3) return p;
-      const prev = [...secs].reverse().find((s) => s.end < z.start + 3 && z.start - s.end <= near);
-      return prev ? prev.ys[prev.ys.length - 1] : z.start;
-    }
-    const prev = [...secs].reverse().find((s) => s.end < y - 3 && y - s.end <= near);
-    return prev ? prev.ys[prev.ys.length - 1] : null;
-  }
-  let sliding = false, slideEnd = 0, lastDir = 1;
-  function slideTo(y) {
-    sliding = true;
-    const dist = Math.abs(y - window.scrollY);
-    // durée proportionnelle à la distance : la vidéo joue à un rythme proche du réel.
-    // Pas de plafond court : accélérer la vidéo la fait saccader (trop de sauts d'image à décoder)
-    const duration = Math.min(6, Math.max(0.8, dist / window.innerHeight * 0.6));
-    gsap.to(window, { scrollTo: { y, autoKill: false }, duration, ease: 'sine.inOut', overwrite: true,
-      onComplete: () => { sliding = false; slideEnd = performance.now(); } });
-  }
-  const slideOn = () => SL && !RM && !cartEl.classList.contains('open') && !mm.classList.contains('open');
-  function slideStep(dir, e) {
-    if (!slideOn()) return false;
-    if (sliding) { if (e) e.preventDefault(); return true; }
-    const t = slideTarget(window.scrollY, dir);
-    if (t === null) return false;
-    if (e) e.preventDefault();
-    lastDir = dir; slideTo(t);
-    return true;
-  }
-  let lastWheel = 0;
-  window.addEventListener('wheel', (e) => {
-    if (!slideOn() || e.ctrlKey || Math.abs(e.deltaY) < 2) return;
-    const now = performance.now(), gap = now - lastWheel; lastWheel = now;
-    // la fin d'un élan de pavé tactile ne doit pas déclencher le texte suivant
-    if (!sliding && now - slideEnd < 650 && gap < 180 && slideTarget(window.scrollY, Math.sign(e.deltaY)) !== null) { e.preventDefault(); return; }
-    slideStep(Math.sign(e.deltaY), e);
-  }, { passive: false });
-  let touchY = null, touchHeld = false;
-  window.addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; touchHeld = false; }, { passive: true });
-  window.addEventListener('touchmove', (e) => {
-    if (touchY === null || !slideOn()) return;
-    const dy = touchY - e.touches[0].clientY;
-    if (sliding || touchHeld) { e.preventDefault(); return; }
-    if (Math.abs(dy) < 8) return;
-    // dans une section vidéo, le doigt ne fait pas défiler : il déclenche le texte suivant au relâché
-    if (slideTarget(window.scrollY, Math.sign(dy)) !== null) { touchHeld = true; e.preventDefault(); }
-  }, { passive: false });
-  window.addEventListener('touchend', (e) => {
-    if (touchY === null) return;
-    const dy = touchY - e.changedTouches[0].clientY; touchY = null;
-    if (touchHeld && Math.abs(dy) > 24) slideStep(Math.sign(dy));
-    touchHeld = false;
-  }, { passive: true });
-  window.addEventListener('keydown', (e) => {
-    if (e.altKey || e.ctrlKey || e.metaKey || e.target.closest('input, textarea, select, [contenteditable]')) return;
-    const dir = { ArrowDown: 1, PageDown: 1, ' ': e.shiftKey ? -1 : 1, ArrowUp: -1, PageUp: -1 }[e.key];
-    if (dir) slideStep(dir, e);
-  });
-  // barre de défilement ou élan tactile arrêté au milieu d'une vidéo : on finit jusqu'au texte suivant
-  let idleT, lastY0 = window.scrollY;
-  window.addEventListener('scroll', () => {
-    const y = window.scrollY;
-    if (y !== lastY0) { if (!sliding) lastDir = Math.sign(y - lastY0); lastY0 = y; }
-    clearTimeout(idleT);
-    if (sliding || !slideOn()) return;
-    idleT = setTimeout(() => {
-      if (sliding || !slideOn() || touchY !== null) return;
-      const y = window.scrollY, secs = slideStops();
-      const z = secs.find((s) => y > s.start + 3 && y < s.end - 3);
-      if (!z || z.ys.some((v) => Math.abs(v - y) <= 4)) return;
-      const t = slideTarget(y, lastDir);
-      if (t !== null) slideTo(t);
-    }, 220);
-  }, { passive: true });
 
   /* ================= Animations génériques ================= */
   function reveals(scope) {
@@ -1821,49 +2338,42 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
   }
   const vh = (n) => () => '+=' + Math.round(window.innerHeight * n / 100);
 
-  /* Les textes qui vont ensemble s'affichent ensemble : un seul geste montre tout le groupe.
+  /* Les textes qui vont ensemble s'affichent ensemble.
      Groupe = textes qui se chevauchent déjà dans le temps, ou deux textes qui se suivent de près
      et ne se gênent pas à l'écran (un à gauche + un à droite, ou deux textes centrés empilés).
      Fonctionne aussi avec les textes réglés depuis la dashboard ACHIRA. */
-  const POS_OF = (ov) => { const m = ov.className.match(/\bov--(tl|tr|bl|br|l|r|c|t|b)\b/); return m ? m[1] : 'c'; };
+  const POS_OF = (ov) => { const m = ov.className.match(/ov--(tl|tr|bl|br|l|r|c|t|b)/); return m ? m[1] : 'c'; };
   const sideOf = (p) => (/^(tl|l|bl)$/.test(p) ? -1 : /^(tr|r|br)$/.test(p) ? 1 : 0);
   const pairable = (x, y) => {
     const a = POS_OF(x), b = POS_OF(y);
     if (a === 'c' || b === 'c') return a === b;
     return sideOf(a) !== 0 && sideOf(b) !== 0 && sideOf(a) !== sideOf(b);
   };
-  // list : [{ ov, a, b }] dans l'ordre d'apparition, en unités de timeline ; b = null si le texte reste jusqu'au bout
-  function groupTexts(list, maxGap) {
+  // list : [{ ov, a, b }] en unités de timeline ; b = null si le texte reste jusqu'au bout
+  function playTexts(tl, list, maxGap, f) {
+    let g = null;
     const groups = [];
     for (const it of [...list].sort((x, y) => x.a - y.a)) {
-      const g = groups[groups.length - 1];
       const last = g && g.items[g.items.length - 1];
       const gEnd = g && (g.items.some((x) => x.b === null) ? Infinity : Math.max(...g.items.map((x) => x.b)));
-      if (g && it.a < gEnd - 1e-6) { g.items.push(it); continue; }           // déjà à l'écran en même temps
+      if (g && it.a < gEnd - 1e-6) { g.items.push(it); continue; }
       if (g && !g.pair && g.items.length === 1 && last.b !== null && it.b !== null
         && it.a - last.b <= maxGap && pairable(last.ov, it.ov)) { g.items.push(it); g.pair = true; continue; }
-      groups.push({ items: [it], pair: false });
+      g = { items: [it], pair: false }; groups.push(g);
     }
-    for (const g of groups) {
-      g.items.forEach((x) => x.ov.classList.remove('ov--above', 'ov--below', 'ov--pair-top'));
-      if (!g.pair) continue;
-      const [first, second] = g.items;
-      // le premier reste affiché jusqu'au départ du second
-      first.b = second.b;
-      if (POS_OF(first.ov) === 'c') { first.ov.classList.add('ov--above'); second.ov.classList.add('ov--below'); }
-      else if (portrait()) first.ov.classList.add('ov--pair-top'); // sur téléphone, gauche et droite sont tous deux en bas
+    for (const gr of groups) {
+      gr.items.forEach((x) => x.ov.classList.remove('ov--above', 'ov--below', 'ov--pair-top'));
+      if (gr.pair) {
+        const [first, second] = gr.items;
+        first.b = second.b; // le premier reste affiché jusqu'au départ du second
+        if (POS_OF(first.ov) === 'c') { first.ov.classList.add('ov--above'); second.ov.classList.add('ov--below'); }
+        else if (portrait()) first.ov.classList.add('ov--pair-top');
+      }
+      for (const it of gr.items) {
+        const parts = overlayIn(tl, it.ov, it.a, f);
+        if (it.b !== null) overlayOut(tl, parts, it.b, f);
+      }
     }
-    return groups;
-  }
-  // anime un groupe et renvoie le moment où tous ses textes sont lisibles (l'arrêt du défilement)
-  function playGroup(tl, g, f, outFor) {
-    let full = 0, out = Infinity;
-    for (const it of g.items) {
-      const parts = overlayIn(tl, it.ov, it.a, f);
-      if (it.b !== null) { const o = outFor ? outFor(it.b) : it.b; overlayOut(tl, parts, o, f); out = Math.min(out, o); }
-      full = Math.max(full, fullAt(it.a, f, parts));
-    }
-    return out === Infinity ? full : Math.min(full, (full + out - f * 0.8) / 2);
   }
 
   /* Section vidéo standard : veste, atelier */
@@ -1879,8 +2389,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
       const [a, b] = ov.dataset.t.split(',').map(Number);
       return { ov, a: Math.max(0.004, a / dur * span), b: b < 90 ? b / dur * span : null };
     });
-    // deux textes à moins de 0,6 s de vidéo d'écart peuvent former un groupe
-    const times = groupTexts(texts, 0.6 / dur * span).map((g) => playGroup(tl, g, f));
+    playTexts(tl, texts, 0.6 / dur * span, f); // deux textes à moins de 0,6 s de vidéo d'écart vont ensemble
     tl.set({}, {}, 1);
     if (sec.dataset.inset) {
       // plans d'ensemble : l'image descend un peu pour laisser la place à la barre ; retour plein cadre sur les gros plans
@@ -1902,7 +2411,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
       apply();
     }
     const rail = $('[data-rail]', sec);
-    const st = ScrollTrigger.create({
+    ScrollTrigger.create({
       trigger: sec, start: 'top top', end: vh(len), pin: true, scrub: 1, animation: tl, anticipatePin: 1,
       onUpdate: rail ? () => {
         const items = $$('li', rail); let k = 0;
@@ -1910,7 +2419,6 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
         items.forEach((li, i) => li.classList.toggle('on', i === k));
       } : undefined,
     });
-    if (SL) SL.push({ st, tl, times });
     scrubs.push({ video: v, state, dur });
     ScrollTrigger.create({ trigger: sec, start: 'top bottom+=160%', once: true, onEnter: () => loadVideo(v) });
   }
@@ -1952,11 +2460,10 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
   /* ================= Accueil ================= */
   let heroTick = null;
   function initHome(page) {
-    SL = [];
     // 1. Tannerie : la vidéo avance avec le scroll, le vol du scarabée fait apparaître AKARBI
     (() => {
       const sec = $('#h-tannerie', page);
-      const v = $('video', sec), dur = parseFloat(sec.dataset.dur) || 4.04, state = { t: 0 };
+      const v = $('video', sec), dur = 4.04, state = { t: 0 };
       const word = $('[data-hero-word]', sec), glint = $('[data-hero-glint]', sec);
       // trajectoire horizontale du scarabée (fraction de la largeur de l'image), relevée image par image
       const PATH = [[2.3, .51], [2.4, .52], [2.5, .53], [2.6, .545], [2.7, .59], [2.8, .624], [2.9, .66], [3.0, .70], [3.1, .74], [3.2, .80], [3.3, .855], [3.4, .905], [3.5, .945], [3.6, .984], [3.7, 1.04], [3.8, 1.1]];
@@ -1999,12 +2506,10 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
       if (heroTick) gsap.ticker.remove(heroTick);
       heroTick = () => { if (!v.paused) paint(); };
       gsap.ticker.add(heroTick);
-      const st = ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(parseFloat(sec.dataset.len) || 400), pin: true, scrub: 1, animation: tl, anticipatePin: 1, onRefresh: paint });
-      // premier geste : le scarabée vole, AKARBI se révèle et la vidéo s'arrête sur le texte
-      SL.push({ st, tl, times: [fullAt(0.74, 0.03, parts)] });
+      ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(400), pin: true, scrub: 1, animation: tl, anticipatePin: 1, onRefresh: paint });
       scrubs.push({ video: v, state, dur });
       const label = $('[data-cue-label]', sec);
-      loadVideo(v).then(() => { if (label) label.textContent = sec.dataset.cue || 'Faites défiler'; sec.classList.add('is-ready'); paint(); });
+      loadVideo(v).then(() => { if (label) label.textContent = 'Faites défiler'; sec.classList.add('is-ready'); paint(); });
       paint();
     })();
 
@@ -2016,7 +2521,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     (() => {
       const sec = $('#h-pa', page);
       const v = $('video', sec), vwrap = $('.pa__video', sec);
-      const dur = parseFloat(sec.dataset.dur) || 4.04, state = { t: 0 };
+      const dur = 4.04, state = { t: 0 };
       const stage = $('[data-pa-stage]', sec);
       const tl = gsap.timeline({ defaults: { ease: 'none' } });
       // ouverture symétrique de la vidéo entre les deux portraits (valeur pilotée à la main :
@@ -2032,11 +2537,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
         .to(slit, { v: 0, duration: 0.12, ease: 'power2.inOut', onUpdate: applySlit }, 0.11)
         .set(stage, { backgroundColor: '#030605' }, 0.235)
         .to(state, { t: dur, duration: 0.48 }, 0.22);
-      const texts = $$('[data-pa-t]', sec).map((ov) => {
-        const [a, b] = ov.dataset.paT.split(',').map(Number);
-        return { ov, a, b };
-      });
-      const times = groupTexts(texts, 0.03).map((g) => playGroup(tl, g, 0.022));
+      playTexts(tl, $$('[data-pa-t]', sec).map((ov) => { const [a, b] = ov.dataset.paT.split(',').map(Number); return { ov, a, b }; }), 0.03, 0.022);
       // écran titre ACHIRA, puis la scène s'éteint avant la partie suivante
       const dim = $('[data-pa-dim]', sec);
       tl.to(dim, { opacity: 0.55, duration: 0.05 }, 0.71);
@@ -2044,9 +2545,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
       overlayOut(tl, tparts, 0.88, 0.03);
       tl.to(dim, { opacity: 0.8, duration: 0.07 }, 0.87)
         .set({}, {}, 0.96);
-      times.push(fullAt(0.72, 0.03, tparts));
-      const st = ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(parseFloat(sec.dataset.len) || 800), pin: true, scrub: 1, animation: tl, anticipatePin: 1, invalidateOnRefresh: true });
-      SL.push({ st, tl, times });
+      ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(800), pin: true, scrub: 1, animation: tl, anticipatePin: 1, invalidateOnRefresh: true });
       tl.eventCallback('onUpdate', () => { const t = tl.progress() < 0.145 ? 'light' : 'dark'; if (sec.dataset.tone !== t) { sec.dataset.tone = t; navTick(); } });
       scrubs.push({ video: v, state, dur });
       ScrollTrigger.create({ trigger: sec, start: 'top bottom+=160%', once: true, onEnter: () => loadVideo(v) });
@@ -2056,17 +2555,11 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     // La lettre se déchire depuis son centre et laisse apparaître la page finale.
     (() => {
       const sec = $('#h-coffre', page);
-      const v = $('video', sec), dur = parseFloat(sec.dataset.dur) || 7.04, state = { t: 0 };
+      const v = $('video', sec), dur = 7.04, state = { t: 0 };
       // --- partie coffre + lettre
       const cTl = gsap.timeline({ defaults: { ease: 'none' } });
       cTl.to(state, { t: dur, duration: 0.6 }, 0);
-      const texts = $$('[data-cf-t]', sec).map((ov) => {
-        const [a, b] = ov.dataset.cfT.split(',').map(Number);
-        return { ov, a, b };
-      });
-      const times = groupTexts(texts, 0.03).map((g) => playGroup(cTl, g, 0.025));
-      // la lettre lisible, puis TRUST YOUR WAY (fTl commence à 0.88 et dure 0.7) et enfin les liens
-      times.push(portrait() ? 0.71 : 0.86, 0.88 + 0.5 * 0.7, 0.88 + 0.9 * 0.7 + 0.01);
+      playTexts(cTl, $$('[data-cf-t]', sec).map((ov) => { const [a, b] = ov.dataset.cfT.split(',').map(Number); return { ov, a, b }; }), 0.03, 0.025);
       const frame = $('[data-cf-frame]', sec), note = $('[data-cf-note]', sec);
       const fr = { k: 1, c: 0.66 };
       const applyFrame = () => {
@@ -2155,8 +2648,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
         const t = fTl.progress() > 0.7 ? 'light' : 'dark';
         if (sec.dataset.tone !== t) { sec.dataset.tone = t; navTick(); }
       });
-      const st = ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(parseFloat(sec.dataset.len) || 880), pin: true, scrub: 1, animation: tl, anticipatePin: 1, onRefresh: () => { applyFrame(); draw(); } });
-      SL.push({ st, tl, times });
+      ScrollTrigger.create({ trigger: sec, start: 'top top', end: vh(880), pin: true, scrub: 1, animation: tl, anticipatePin: 1, onRefresh: () => { applyFrame(); draw(); } });
       scrubs.push({ video: v, state, dur });
       ScrollTrigger.create({ trigger: sec, start: 'top bottom+=160%', once: true, onEnter: () => loadVideo(v) });
       draw();
@@ -2210,19 +2702,25 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     if (!h.startsWith('#/')) return;
     const parts = h.slice(2).split('/');
     let name = parts[0] || 'home';
-    if (!['home', 'produits', 'produit', 'achira', 'univers'].includes(name)) name = 'home';
+    if (!['home', 'produits', 'produit', 'achira', 'univers', 'heritage'].includes(name)) name = 'home';
+    const sel = name === 'heritage' && parts[1] ? selection(parts[1]) : null;
+    if (name === 'heritage' && parts[1]) { if (!sel) { location.replace('#/heritage'); return; } name = 'selection'; }
     if (ctx) { ctx.revert(); ctx = null; }
-    scrubs.length = 0; SL = null; sliding = false;
+    scrubs.length = 0;
     closeCart(); closeMenu();
     $$('.page').forEach((p) => { p.hidden = p.dataset.page !== name; });
     if (name === 'produit' && !PRODUCTS[parts[1]]) { location.replace('#/produits'); return; }
-    $$('.nav__links a').forEach((a) => { if (a.dataset.route === name || (name === 'produit' && a.dataset.route === 'produits')) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+    $$('.nav__links a').forEach((a) => { if (a.dataset.route === name || (name === 'produit' && a.dataset.route === 'produits') || (name === 'selection' && a.dataset.route === 'heritage')) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     if (name === 'produit') renderProduct(parts[1]);
     viewer.close();
+    if (name === 'heritage') renderHeritage();
+    if (name === 'selection') renderSelection(sel.id);
     window.scrollTo(0, 0);
     nav.classList.remove('is-min');
     const page = $(`.page[data-page="${name}"]`);
-    document.title = name === 'produit' ? `${PRODUCTS[parts[1]].name} ${PRODUCTS[parts[1]].color} — AKARBI` : { home: 'AKARBI — Trust your way', produits: 'Produits — AKARBI', achira: 'ACHIRA — AKARBI', univers: 'Univers AKARBI' }[name];
+    document.title = name === 'produit' ? `${[PRODUCTS[parts[1]].name, PRODUCTS[parts[1]].color].filter(Boolean).join(' ')} — AKARBI`
+      : name === 'selection' ? `${sel.titre} — Héritage AKARBI`
+      : { home: 'AKARBI — Trust your way', produits: 'Produits — AKARBI', heritage: 'Héritage — AKARBI', achira: 'ACHIRA — AKARBI', univers: 'Univers AKARBI' }[name];
     ctx = gsap.context(() => {
       if (RM) { initReduced(page); return; }
       if (name === 'home') initHome(page); else reveals(page);
@@ -2247,114 +2745,11 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
   // la police de marque change la hauteur des titres : on recalcule les sections épinglées une fois chargée
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => ScrollTrigger.refresh());
 
-  /* ================= Accueil géré depuis la dashboard ACHIRA =================
-     Vidéos, textes, positions et moments d'apparition sont enregistrés dans la base ACHIRA (site_content, clé « akarbi_home »).
-     Sans réponse rapide de la base, la page garde la mise en scène écrite ci-dessus. Les temps sont en secondes de vidéo. */
-  const HOME_DB = {
-    url: 'https://wscvemgeqyzlojkmrmkb.supabase.co',
-    // clé publique « anon » : la base n'autorise que la lecture de ces réglages
-    key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndzY3ZlbWdlcXl6bG9qa21ybWtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0NDgzNTIsImV4cCI6MjEwODAyNDM1Mn0.nLc-xcfTEF9cUpudV35eeSIy6nQRgXwi2m2BCTAZQ9I',
-  };
-  async function fetchHome() {
-    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 1800);
-    try {
-      const r = await fetch(`${HOME_DB.url}/rest/v1/site_content?key=eq.akarbi_home&select=value`, { headers: { apikey: HOME_DB.key, Authorization: 'Bearer ' + HOME_DB.key }, signal: ctl.signal });
-      const j = r.ok ? await r.json() : [];
-      return j[0] && j[0].value && typeof j[0].value === 'object' ? j[0].value : null;
-    } catch (e) { return null; } finally { clearTimeout(to); }
-  }
-  const KINDS = { eyebrow: ['p', 'eyebrow'], h2: ['h2', 'h2'], h3: ['h3', 'h3'], 'lead-xl': ['p', 'lead lead--xl'], lead: ['p', 'lead'], body: ['p', 'body'],
-    num: ['p', 'step__num'], 'step-title': ['h3', 'step__title'], 'step-txt': ['p', 'step__txt'], display: ['h2', 'display'], motto: ['p', 'hero-motto'], link: ['a', 'link'] };
-  const POS = ['tl', 't', 'tr', 'l', 'c', 'r', 'bl', 'b', 'br'];
-  const num = (x, d) => (Number.isFinite(+x) && x !== null && x !== '' ? +x : d);
-  function partEl(p) {
-    const k = KINDS[p.k] || KINDS.body, el = document.createElement(k[0]);
-    el.className = k[1]; el.setAttribute('data-part', ''); el.textContent = String(p.t || '');
-    if (p.k === 'link') {
-      const h = String(p.href || '');
-      el.href = /^(#|\/|https:\/\/)/.test(h) ? h : '#';
-      if (h.startsWith('#h-')) el.setAttribute('data-anchor', '');
-      else if (h.startsWith('https://')) { el.target = '_blank'; el.rel = 'noopener'; }
-      const s = document.createElement('span'); s.textContent = h.startsWith('#h-') ? '↓' : '→'; el.append(' ', s);
-    }
-    return el;
-  }
-  const setParts = (box, parts) => { if (box && Array.isArray(parts)) box.replaceChildren(...parts.map(partEl)); };
-  function setMedia(sec, s) {
-    const v = $('video', sec);
-    if (s.video) v.dataset.src = s.video;
-    if (s.poster) v.poster = s.poster;
-    if (num(s.dur, 0) > 0.5) sec.dataset.dur = num(s.dur, 0);
-    if (num(s.len, 0) >= 100) sec.dataset.len = num(s.len, 0);
-  }
-  // remplace les textes d'une section ; at / out en secondes, convertis dans l'unité de la timeline de la section
-  function setOverlays(sec, list, attr, conv, before) {
-    if (!Array.isArray(list)) return;
-    const stage = $('.scrub__stage', sec);
-    $$(`.ov[${attr}]`, sec).forEach((e) => e.remove());
-    list.forEach((o) => {
-      const d = document.createElement('div');
-      d.className = `ov ov--${POS.includes(o.pos) ? o.pos : 'c'}${o.style === 'step' ? ' step' : o.style === 'step-end' ? ' step step--end' : ''}`;
-      d.setAttribute(attr, conv(num(o.at, 0), o.out === null || o.out === undefined || o.out === '' ? null : num(o.out, null)));
-      setParts(d, o.parts || []);
-      stage.insertBefore(d, before ? $(before, sec) : null);
-    });
-  }
-  function applyHome(c) {
-    const page = $('.page[data-page="home"]');
-    const S = (id) => $('#' + id, page);
-    const f3 = (x) => (Math.round(x * 1000) / 1000).toString();
-    if (c.tannerie) {
-      const sec = S('h-tannerie'), s = c.tannerie;
-      setMedia(sec, s); setParts($('[data-hero-after]', sec), s.after);
-      if (s.cue) sec.dataset.cue = s.cue;
-    }
-    for (const id of ['veste', 'atelier']) {
-      const s = c[id]; if (!s) continue;
-      const sec = S('h-' + id);
-      setMedia(sec, s);
-      if (Array.isArray(s.inset) && s.inset.length === 2) sec.dataset.inset = s.inset.map((x) => num(x, 0)).join(','); else if (s.inset === null) delete sec.dataset.inset;
-      setOverlays(sec, s.ov, 'data-t', (a, b) => `${f3(a)},${b === null ? 99 : f3(b)}`, '[data-rail]');
-      const rail = $('[data-rail]', sec);
-      if (rail && Array.isArray(s.rail)) {
-        rail.replaceChildren(...s.rail.map((r) => { const li = document.createElement('li'); li.dataset.at = num(r.at, 0); li.textContent = String(r.t || ''); return li; }));
-        rail.hidden = !s.rail.length;
-      }
-    }
-    if (c.pa) {
-      const sec = S('h-pa'), s = c.pa; setMedia(sec, s);
-      const dur = parseFloat(sec.dataset.dur) || 4.04;
-      // la vidéo joue entre 22 % et 70 % de la scène ; le titre ACHIRA vient après
-      const fr = (t) => Math.min(0.71, 0.22 + Math.max(0, t) / dur * 0.48);
-      setOverlays(sec, s.ov, 'data-pa-t', (a, b) => `${f3(fr(a))},${f3(b === null ? 0.7 : Math.max(fr(b), fr(a) + 0.04))}`, '[data-pa-title]');
-      if (s.head) $('[data-pa-head] h2', sec).textContent = s.head;
-      setParts($('[data-pa-title]', sec), s.title);
-    }
-    if (c.coffre) {
-      const sec = S('h-coffre'), s = c.coffre; setMedia(sec, s);
-      const dur = parseFloat(sec.dataset.dur) || 7.04;
-      // la vidéo joue sur les 60 premiers % ; après, la lettre (jusqu'à 90 %, avant la déchirure)
-      const fr = (t) => Math.min(0.9, Math.max(0, t) / dur * 0.6);
-      setOverlays(sec, s.ov, 'data-cf-t', (a, b) => `${f3(Math.max(0.01, fr(a)))},${f3(b === null ? 0.9 : Math.max(fr(b), fr(a) + 0.05))}`, '[data-cf-note]');
-      const note = $('[data-cf-note]', sec);
-      if (Array.isArray(s.letter)) {
-        note.replaceChildren(...s.letter.map((t) => { const p = document.createElement('p'); p.textContent = String(t); return p; }));
-        if (s.sign) { const p = document.createElement('p'); p.className = 'cf-note__sign'; p.textContent = s.sign; note.appendChild(p); }
-      }
-      if (s.finTitle) $('[data-fin-title]', sec).textContent = s.finTitle;
-      if (s.finSub) $('[data-fin-sub]', sec).textContent = s.finSub;
-    }
-  }
-
-  renderCards();
-  renderCart();
-  // l'accueil attend la mise en scène de la dashboard (1,8 s au plus) ; les autres pages s'ouvrent tout de suite
-  const homeFirst = !/^#\/(produits|produit|achira|univers)/.test(location.hash);
-  if (homeFirst) document.documentElement.classList.add('home-wait'); else route();
-  fetchHome().then((c) => {
-    if (c) { try { applyHome(c); } catch (e) { console.warn('Accueil AKARBI : réglages ignorés', e); } }
-    if (homeFirst) route();
-    document.documentElement.classList.remove('home-wait');
+  Promise.all([chargerCatalogue(), chargerCompte()]).finally(() => {
+    cart.charger();
+    renderCards();
+    renderCart();
+    route();
   });
 })();
 
