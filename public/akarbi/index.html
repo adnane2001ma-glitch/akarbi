@@ -194,6 +194,11 @@ html.home-wait .ov, html.home-wait [data-hero-after], html.home-wait [data-pa-ti
 .step__txt { font: italic 400 clamp(19px, 1.7vw, 26px)/1.3 var(--serif); color: rgba(238, 229, 211, .9); max-width: 30ch; text-shadow: 0 2px 18px rgba(0, 0, 0, .7); }
 .step--end { max-width: min(520px, 40vw); }
 .ov--b { left: 50%; bottom: clamp(60px, 11vh, 120px); transform: translateX(-50%); text-align: center; justify-items: center; max-width: min(900px, 90vw); }
+/* deux textes centrés affichés ensemble : l'un au-dessus de l'autre */
+.ov--c.ov--above { top: 46%; transform: translate(-50%, -100%); }
+.ov--c.ov--below { top: 54%; transform: translate(-50%, 0); }
+/* sur téléphone, un groupe gauche + droite : le premier monte en haut de l'écran */
+.ov.ov--pair-top { top: clamp(92px, 14vh, 130px) !important; bottom: auto !important; }
 .ov--t { left: 50%; top: clamp(110px, 17vh, 170px); transform: translateX(-50%); text-align: center; justify-items: center; max-width: min(900px, 90vw); }
 .ov .body { color: var(--iv80); font-size: 17px; max-width: 42ch; text-shadow: 0 2px 14px rgba(0, 0, 0, .55); }
 .ov .h2, .ov .h3, .ov .lead, .ov .display { text-shadow: 0 2px 30px rgba(0, 0, 0, .45); }
@@ -1696,9 +1701,10 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
   function slideTo(y) {
     sliding = true;
     const dist = Math.abs(y - window.scrollY);
-    // durée proportionnelle à la distance : la vidéo joue à un rythme proche du réel
-    const duration = Math.min(3, Math.max(0.7, dist / window.innerHeight * 0.5));
-    gsap.to(window, { scrollTo: { y, autoKill: false }, duration, ease: 'power1.inOut', overwrite: true,
+    // durée proportionnelle à la distance : la vidéo joue à un rythme proche du réel.
+    // Pas de plafond court : accélérer la vidéo la fait saccader (trop de sauts d'image à décoder)
+    const duration = Math.min(6, Math.max(0.8, dist / window.innerHeight * 0.6));
+    gsap.to(window, { scrollTo: { y, autoKill: false }, duration, ease: 'sine.inOut', overwrite: true,
       onComplete: () => { sliding = false; slideEnd = performance.now(); } });
   }
   const slideOn = () => SL && !RM && !cartEl.classList.contains('open') && !mm.classList.contains('open');
@@ -1800,6 +1806,51 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
   }
   const vh = (n) => () => '+=' + Math.round(window.innerHeight * n / 100);
 
+  /* Les textes qui vont ensemble s'affichent ensemble : un seul geste montre tout le groupe.
+     Groupe = textes qui se chevauchent déjà dans le temps, ou deux textes qui se suivent de près
+     et ne se gênent pas à l'écran (un à gauche + un à droite, ou deux textes centrés empilés).
+     Fonctionne aussi avec les textes réglés depuis la dashboard ACHIRA. */
+  const POS_OF = (ov) => { const m = ov.className.match(/\bov--(tl|tr|bl|br|l|r|c|t|b)\b/); return m ? m[1] : 'c'; };
+  const sideOf = (p) => (/^(tl|l|bl)$/.test(p) ? -1 : /^(tr|r|br)$/.test(p) ? 1 : 0);
+  const pairable = (x, y) => {
+    const a = POS_OF(x), b = POS_OF(y);
+    if (a === 'c' || b === 'c') return a === b;
+    return sideOf(a) !== 0 && sideOf(b) !== 0 && sideOf(a) !== sideOf(b);
+  };
+  // list : [{ ov, a, b }] dans l'ordre d'apparition, en unités de timeline ; b = null si le texte reste jusqu'au bout
+  function groupTexts(list, maxGap) {
+    const groups = [];
+    for (const it of [...list].sort((x, y) => x.a - y.a)) {
+      const g = groups[groups.length - 1];
+      const last = g && g.items[g.items.length - 1];
+      const gEnd = g && (g.items.some((x) => x.b === null) ? Infinity : Math.max(...g.items.map((x) => x.b)));
+      if (g && it.a < gEnd - 1e-6) { g.items.push(it); continue; }           // déjà à l'écran en même temps
+      if (g && !g.pair && g.items.length === 1 && last.b !== null && it.b !== null
+        && it.a - last.b <= maxGap && pairable(last.ov, it.ov)) { g.items.push(it); g.pair = true; continue; }
+      groups.push({ items: [it], pair: false });
+    }
+    for (const g of groups) {
+      g.items.forEach((x) => x.ov.classList.remove('ov--above', 'ov--below', 'ov--pair-top'));
+      if (!g.pair) continue;
+      const [first, second] = g.items;
+      // le premier reste affiché jusqu'au départ du second
+      first.b = second.b;
+      if (POS_OF(first.ov) === 'c') { first.ov.classList.add('ov--above'); second.ov.classList.add('ov--below'); }
+      else if (portrait()) first.ov.classList.add('ov--pair-top'); // sur téléphone, gauche et droite sont tous deux en bas
+    }
+    return groups;
+  }
+  // anime un groupe et renvoie le moment où tous ses textes sont lisibles (l'arrêt du défilement)
+  function playGroup(tl, g, f, outFor) {
+    let full = 0, out = Infinity;
+    for (const it of g.items) {
+      const parts = overlayIn(tl, it.ov, it.a, f);
+      if (it.b !== null) { const o = outFor ? outFor(it.b) : it.b; overlayOut(tl, parts, o, f); out = Math.min(out, o); }
+      full = Math.max(full, fullAt(it.a, f, parts));
+    }
+    return out === Infinity ? full : Math.min(full, (full + out - f * 0.8) / 2);
+  }
+
   /* Section vidéo standard : veste, atelier */
   function scrubSection(sec) {
     const v = $('video', sec);
@@ -1808,15 +1859,13 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     const state = { t: 0 };
     const tl = gsap.timeline({ defaults: { ease: 'none' } });
     tl.to(state, { t: dur, duration: span }, 0);
-    const f = 0.018, times = [];
-    $$('[data-t]', sec).forEach((ov) => {
+    const f = 0.018;
+    const texts = $$('[data-t]', sec).map((ov) => {
       const [a, b] = ov.dataset.t.split(',').map(Number);
-      const pin = Math.max(0.004, a / dur * span), pout = b / dur * span;
-      const parts = overlayIn(tl, ov, pin, f);
-      if (b < 90) overlayOut(tl, parts, pout, f);
-      const tin = fullAt(pin, f, parts);
-      times.push(b < 90 ? Math.min(tin, (tin + pout - f * 0.8) / 2) : tin);
+      return { ov, a: Math.max(0.004, a / dur * span), b: b < 90 ? b / dur * span : null };
     });
+    // deux textes à moins de 0,6 s de vidéo d'écart peuvent former un groupe
+    const times = groupTexts(texts, 0.6 / dur * span).map((g) => playGroup(tl, g, f));
     tl.set({}, {}, 1);
     if (sec.dataset.inset) {
       // plans d'ensemble : l'image descend un peu pour laisser la place à la barre ; retour plein cadre sur les gros plans
@@ -1962,13 +2011,11 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
         .to(slit, { v: 0, duration: 0.12, ease: 'power2.inOut', onUpdate: applySlit }, 0.11)
         .set(stage, { backgroundColor: '#030605' }, 0.235)
         .to(state, { t: dur, duration: 0.48 }, 0.22);
-      const times = [];
-      $$('[data-pa-t]', sec).forEach((ov) => {
+      const texts = $$('[data-pa-t]', sec).map((ov) => {
         const [a, b] = ov.dataset.paT.split(',').map(Number);
-        const parts = overlayIn(tl, ov, a, 0.022);
-        overlayOut(tl, parts, b, 0.022);
-        times.push(fullAt(a, 0.022, parts));
+        return { ov, a, b };
       });
+      const times = groupTexts(texts, 0.03).map((g) => playGroup(tl, g, 0.022));
       // écran titre ACHIRA, puis la scène s'éteint avant la partie suivante
       const dim = $('[data-pa-dim]', sec);
       tl.to(dim, { opacity: 0.55, duration: 0.05 }, 0.71);
@@ -1992,13 +2039,11 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
       // --- partie coffre + lettre
       const cTl = gsap.timeline({ defaults: { ease: 'none' } });
       cTl.to(state, { t: dur, duration: 0.6 }, 0);
-      const times = [];
-      $$('[data-cf-t]', sec).forEach((ov) => {
+      const texts = $$('[data-cf-t]', sec).map((ov) => {
         const [a, b] = ov.dataset.cfT.split(',').map(Number);
-        const parts = overlayIn(cTl, ov, a, 0.025);
-        overlayOut(cTl, parts, b, 0.025);
-        times.push(fullAt(a, 0.025, parts));
+        return { ov, a, b };
       });
+      const times = groupTexts(texts, 0.03).map((g) => playGroup(cTl, g, 0.025));
       // la lettre lisible, puis TRUST YOUR WAY (fTl commence à 0.88 et dure 0.7) et enfin les liens
       times.push(portrait() ? 0.71 : 0.86, 0.88 + 0.5 * 0.7, 0.88 + 0.9 * 0.7 + 0.01);
       const frame = $('[data-cf-frame]', sec), note = $('[data-cf-note]', sec);
