@@ -555,8 +555,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
 .viewer { position: fixed; inset: 0; z-index: 125; display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 400px); background: radial-gradient(65% 60% at 40% 42%, #f7f1e4, var(--paper) 55%, #e2d6bf 100%); color: var(--ink); opacity: 0; visibility: hidden; transition: opacity .45s var(--ease), visibility 0s .45s; }
 .viewer.open { opacity: 1; visibility: visible; transition: opacity .45s var(--ease); }
 .viewer__close { position: absolute; top: calc(18px + env(safe-area-inset-top, 0px)); right: 18px; z-index: 3; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: rgba(16, 35, 29, .08); font-size: 22px; }
-.viewer__stage { position: relative; display: grid; place-items: center; touch-action: pan-y; cursor: grab; user-select: none; }
-.viewer__stage.is-drag { cursor: grabbing; }
+.viewer__stage { position: relative; display: grid; place-items: center; touch-action: pan-y; cursor: pointer; user-select: none; }
 .viewer__spin { position: relative; width: 0; height: min(62vh, 560px); }
 .viewer__spin .turn { filter: drop-shadow(0 34px 34px rgba(40, 30, 10, .3)); }
 .viewer__floor { position: absolute; bottom: 12%; left: 50%; width: min(40vh, 30vw); height: 40px; transform: translateX(-50%); background: radial-gradient(closest-side, rgba(40, 30, 10, .28), transparent); }
@@ -950,7 +949,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
 <!-- =================== UNIVERS =================== -->
 <div class="page" data-page="univers" hidden>
   <section class="pg-hero pg-hero--img" data-tone="dark" style="min-height:100vh;min-height:100svh">
-    <img src="img/u-porte-cuir.webp" alt="" data-parallax>
+    <img src="img/u-porte-cuir.webp" alt="">
     <div class="pg-hero__in">
       <p class="eyebrow" data-reveal>Univers AKARBI</p>
       <h1 class="display" data-split>Ombre, chemin, lumière.</h1>
@@ -1107,7 +1106,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     <div class="viewer__floor" aria-hidden="true"></div>
     <div class="viewer__spin" data-viewer-spin></div>
     <div class="viewer__pins" data-viewer-pins aria-hidden="true"></div>
-    <p class="viewer__hint" aria-hidden="true">Fais-la tourner du doigt</p>
+    <p class="viewer__hint" aria-hidden="true">Touche la veste pour la voir de côté</p>
   </div>
   <div class="viewer__panel" data-viewer-panel></div>
 </div>
@@ -1493,28 +1492,23 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     const el = $('#viewer'), spin = $('[data-viewer-spin]'), stage = $('[data-viewer-stage]');
     const panel = $('[data-viewer-panel]'), pins = $('[data-viewer-pins]');
     const PIN_AT = ['left:7%;top:18%', 'left:5%;top:62%', 'right:7%;top:24%', 'right:5%;top:66%'];
-    let angle = 0, vel = 0, raf = 0, drag = null, opener = null, open = false, turn = null;
+    // La veste ne tourne pas toute seule : un toucher la fait passer vite à la vue suivante
+    // (face → profil → dos → profil), à droite vers l'avant, à gauche vers l'arrière.
+    const state = { angle: 0 };
+    let opener = null, open = false, turn = null, tween = null;
 
-    function tick() {
-      // ralentit sur la face, le profil et le dos pour qu'on ait le temps de les regarder
-      if (!drag) {
-        const near = Math.abs(Math.cos((angle * Math.PI) / 90)); // 1 sur une vue, 0 entre deux
-        vel += ((RM ? 0 : 0.22 + 1.1 * (1 - near)) - vel) * 0.05;
-        angle += vel;
-      }
-      pose(turn, angle);
-      raf = requestAnimationFrame(tick);
+    function step(dir) {
+      const to = Math.round(state.angle / 90) * 90 + dir * 90;
+      if (tween) tween.kill();
+      if (RM) { state.angle = to; pose(turn, to); return; }
+      tween = gsap.to(state, { angle: to, duration: 0.45, ease: 'power2.inOut', onUpdate: () => pose(turn, state.angle) });
     }
 
-    stage.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, a: angle }; stage.classList.add('is-drag'); stage.setPointerCapture(e.pointerId); });
-    stage.addEventListener('pointermove', (e) => {
-      if (!drag) return;
-      const a = drag.a + (e.clientX - drag.x) * 0.6;
-      vel = a - angle; angle = a;
+    stage.addEventListener('click', (e) => {
+      if (!turn) return;
+      const r = stage.getBoundingClientRect();
+      step(e.clientX < r.left + r.width / 2 ? -1 : 1);
     });
-    const release = () => { drag = null; stage.classList.remove('is-drag'); };
-    stage.addEventListener('pointerup', release);
-    stage.addEventListener('pointercancel', release);
 
     function fill(index) {
       const it = cart.items[index], p = PRODUCTS[it.id];
@@ -1538,16 +1532,15 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
       if (!cart.items[index]) return;
       fill(index);
       opener = from || document.activeElement;
-      angle = 0; vel = 0; open = true;
+      if (tween) tween.kill(); state.angle = 0; pose(turn, 0); open = true;
       el.classList.add('open'); el.setAttribute('aria-hidden', 'false');
-      cancelAnimationFrame(raf); tick();
       setTimeout(() => $('[data-viewer-close]').focus(), 60);
     }
     function close() {
       if (!open) return;
       open = false;
       el.classList.remove('open'); el.setAttribute('aria-hidden', 'true');
-      setTimeout(() => { if (!open) cancelAnimationFrame(raf); }, 450);
+      if (tween) tween.kill();
       if (opener && document.contains(opener)) opener.focus({ preventScroll: true });
       else $('[data-rack]').focus({ preventScroll: true });
       opener = null;
@@ -1560,6 +1553,7 @@ html.rm .fin__paper { position: relative; min-height: 100vh; min-height: 100svh;
     document.addEventListener('keydown', (e) => {
       if (!open) return;
       if (e.key === 'Escape') { e.stopImmediatePropagation(); close(); return; }
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); step(e.key === 'ArrowRight' ? 1 : -1); return; }
       if (e.key !== 'Tab') return;
       e.stopImmediatePropagation(); // le piège à focus du panier ne doit pas reprendre la main
       const scope = focusables(el);
